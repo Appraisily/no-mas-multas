@@ -25,7 +25,7 @@ import { useLanguage } from '@/lib/LanguageContext';
 import { useTheme } from '@/lib/ThemeContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import Armadillo from '@/components/Armadillo';
+import { Armadillo } from '@/components/Armadillo';
 
 // Mock user profile for demo purposes
 const mockUserProfile: UserProfile = {
@@ -303,7 +303,7 @@ export default function Home() {
       />
       
       {/* Confetti component */}
-      <Confetti duration={2000} />
+      <Confetti duration={2000} trigger={showConfetti} />
       
       {/* Guided Tour */}
       <GuidedTour 
@@ -587,7 +587,7 @@ export default function Home() {
       </div>
       
       {/* Confetti effect when clicking Get Started */}
-      {showConfetti && <Confetti duration={2000} />}
+      {showConfetti && <Confetti duration={2000} trigger={showConfetti} />}
     </div>
   );
 }
