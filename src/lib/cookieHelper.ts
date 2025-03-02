@@ -1,4 +1,12 @@
 /**
+ * Cookie helper functions for managing user preferences and state
+ */
+
+const FIRST_VISIT_COOKIE = 'no-mas-multas-first-visit';
+const THEME_PREFERENCE_COOKIE = 'no-mas-multas-theme';
+const LANGUAGE_PREFERENCE_COOKIE = 'no-mas-multas-language';
+
+/**
  * Set a cookie with a given name, value, and expiration days
  */
 export const setCookie = (name: string, value: string, days: number = 365): void => {
@@ -36,13 +44,65 @@ export const deleteCookie = (name: string): void => {
 /**
  * Check if this is the user's first visit
  */
-export const isFirstVisit = (): boolean => {
-  return getCookie('visited') === null;
-};
+export function isFirstVisit(): boolean {
+  if (typeof window === 'undefined') return false;
+  return !document.cookie.includes(`${FIRST_VISIT_COOKIE}=false`);
+}
 
 /**
- * Mark that the user has visited the site
+ * Mark the user as having visited before
  */
-export const markAsVisited = (): void => {
-  setCookie('visited', 'true', 365);
-}; 
+export function markAsVisited(): void {
+  if (typeof window === 'undefined') return;
+  const expiryDate = new Date();
+  expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+  document.cookie = `${FIRST_VISIT_COOKIE}=false; expires=${expiryDate.toUTCString()}; path=/`;
+}
+
+/**
+ * Set a theme preference cookie
+ */
+export function setThemePreference(theme: string): void {
+  if (typeof window === 'undefined') return;
+  const expiryDate = new Date();
+  expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+  document.cookie = `${THEME_PREFERENCE_COOKIE}=${theme}; expires=${expiryDate.toUTCString()}; path=/`;
+}
+
+/**
+ * Get the user's theme preference
+ */
+export function getThemePreference(): string | null {
+  if (typeof window === 'undefined') return null;
+  const match = document.cookie.match(new RegExp(`(^| )${THEME_PREFERENCE_COOKIE}=([^;]+)`));
+  return match ? match[2] : null;
+}
+
+/**
+ * Set a language preference cookie
+ */
+export function setLanguagePreference(language: string): void {
+  if (typeof window === 'undefined') return;
+  const expiryDate = new Date();
+  expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+  document.cookie = `${LANGUAGE_PREFERENCE_COOKIE}=${language}; expires=${expiryDate.toUTCString()}; path=/`;
+}
+
+/**
+ * Get the user's language preference
+ */
+export function getLanguagePreference(): string | null {
+  if (typeof window === 'undefined') return null;
+  const match = document.cookie.match(new RegExp(`(^| )${LANGUAGE_PREFERENCE_COOKIE}=([^;]+)`));
+  return match ? match[2] : null;
+}
+
+/**
+ * Clear all app cookies
+ */
+export function clearAllCookies(): void {
+  if (typeof window === 'undefined') return;
+  document.cookie = `${FIRST_VISIT_COOKIE}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  document.cookie = `${THEME_PREFERENCE_COOKIE}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  document.cookie = `${LANGUAGE_PREFERENCE_COOKIE}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+} 
