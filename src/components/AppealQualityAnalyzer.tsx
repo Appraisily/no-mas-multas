@@ -696,7 +696,7 @@ export default function AppealQualityAnalyzer({
                       </div>
                       {issue.text && issue.replacement && onApplySuggestion && (
                         <button
-                          onClick={() => handleApplySuggestion(issue.text, issue.replacement)}
+                          onClick={() => handleApplySuggestion(issue.text || '', issue.replacement || '')}
                           className="text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800 px-2 py-1 rounded"
                         >
                           {t('applySuggestion') || "Apply"}

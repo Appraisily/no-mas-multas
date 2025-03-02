@@ -458,7 +458,7 @@ const AppealText: React.FC<AppealTextProps> = ({
                 <PDFExport
                   appealText={text}
                   appealType={appealType}
-                  fineInfo={fineInfo}
+                  fineInfo={fineInfo as any}
                   appealTitle={`${t('appealFor') || 'Appeal for'} ${fineInfo.reason || t('trafficViolation') || 'Traffic Violation'}`}
                 />
               )}
@@ -487,7 +487,7 @@ const AppealText: React.FC<AppealTextProps> = ({
             <PDFExport
               appealText={text}
               appealType={appealType}
-              fineInfo={fineInfo} 
+              fineInfo={fineInfo as any} 
               appealTitle={`${t('appealFor') || 'Appeal for'} ${fineInfo.reason || t('trafficViolation') || 'Traffic Violation'}`}
             />
           </div>

@@ -1,5 +1,24 @@
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
-import { FineData, AppealOptions } from '@/types';
+
+// Define types locally to avoid import issues
+interface FineData {
+  fineNumber?: string;
+  date?: string;
+  amount?: string;
+  location?: string;
+  reason?: string;
+  licensePlate?: string;
+  vehicleType?: string;
+  authority?: string;
+  dueDate?: string;
+  additionalInfo?: string;
+}
+
+interface AppealOptions {
+  appealType: 'procedural' | 'factual' | 'legal' | 'comprehensive';
+  customDetails?: string;
+  includeTemplateText: boolean;
+}
 
 // Initialize the Google Generative AI with your API key
 // In production, this should be stored in environment variables

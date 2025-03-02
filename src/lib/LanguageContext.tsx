@@ -320,7 +320,6 @@ const translations: Translations = {
     regulationSelected: 'Selected',
     fullText: 'Full Text',
     source: 'Source',
-    relevance: 'Relevance',
     expandDetails: 'Expand details',
     collapseDetails: 'Collapse details',
     viewSource: 'View source',
@@ -335,14 +334,15 @@ const translations: Translations = {
     jurisdictionFederal: 'Federal',
     
     // Violation types (for RegulationFinder)
-    violationTypeParking: 'Parking',
-    violationTypeSpeeding: 'Speeding',
-    violationTypeRedLight: 'Red Light',
-    violationTypeStopSign: 'Stop Sign',
-    violationTypeRightOfWay: 'Right of Way',
-    violationTypeRegistration: 'Vehicle Registration',
-    violationTypeDriverLicense: 'Driver License',
-    violationTypeGeneral: 'General',
+    violationTypeParking2: 'Parking',
+    violationTypeSpeeding2: 'Speeding',
+    violationTypeRedLight2: 'Red Light',
+    violationTypeStopSign2: 'Stop Sign',
+    violationTypeRightOfWay2: 'Right of Way',
+    violationTypeRegistration2: 'Vehicle Registration',
+    violationTypeLicense2: 'Driver License',
+    violationTypeInsurance2: 'Insurance',
+    violationTypeOther2: 'Other',
     
     // Appeal Text component buttons
     showRegulations: 'Find Regulations',
@@ -389,8 +389,8 @@ const translations: Translations = {
     afterCompletionInfo: 'Your appeal process has been completed. You should have received the final decision. If you disagree with the outcome, you may have options for further appeal.',
     afterRejectionInfo: 'Your appeal has been rejected. You should have received details about the rejection reason. You may have options for a secondary appeal depending on your jurisdiction.',
     errorFetchingStatus: 'Failed to fetch appeal status. Please try again later.',
-    errorOccurred: 'An error occurred',
-    tryAgain: 'Try Again',
+    errorOccurred2: 'An error occurred',
+    tryAgain2: 'Try Again',
     refreshEvery30Seconds: 'Refresh every 30 seconds',
     refreshEveryMinute: 'Refresh every minute',
     refreshEvery5Minutes: 'Refresh every 5 minutes',
@@ -401,18 +401,18 @@ const translations: Translations = {
     createNewAppeal: 'Create New Appeal',
     allAppeals: 'All Appeals',
     activeAppeals: 'Active Appeals',
-    completedAppeals: 'Completed',
+    completedAppeals2: 'Completed',
     rejectedAppeals: 'Rejected',
     sortBy: 'Sort by:',
     submissionDate: 'Submission Date',
     status: 'Status',
-    appealType: 'Appeal Type',
+    appealType2: 'Appeal Type',
     sortAscending: 'Sort ascending',
     sortDescending: 'Sort descending',
     noAppealsFound: 'No appeals found',
     createAppealToGetStarted: 'Create an appeal to get started',
     violationReason: 'Violation',
-    fineAmount: 'Fine',
+    fineAmount2: 'Fine',
     errorFetchingAppeals: 'Failed to fetch appeals. Please try again later.',
     
     // Appeal Details Page
@@ -420,9 +420,9 @@ const translations: Translations = {
     submittedOn: 'Submitted on',
     fineDetails: 'Fine Details',
     fineNumber: 'Fine Number',
-    fineDate: 'Date of Fine',
-    fineReason: 'Reason',
-    fineLocation: 'Location',
+    fineDate2: 'Date of Fine',
+    fineReason2: 'Reason',
+    fineLocation2: 'Location',
     officerName: 'Officer Name',
     appealContent: 'Appeal Content',
     actions: 'Actions',
@@ -450,7 +450,7 @@ const translations: Translations = {
     // Navigation
     dashboard: 'Dashboard',
     createAppeal: 'Create Appeal',
-    myAppeals: 'My Appeals',
+    myAppeals2: 'My Appeals',
     statistics: 'Statistics',
     resources: 'Resources',
     demo: 'Demo',
@@ -753,7 +753,6 @@ const translations: Translations = {
     regulationSelected: 'Seleccionada',
     fullText: 'Texto Completo',
     source: 'Fuente',
-    relevance: 'Relevancia',
     expandDetails: 'Expandir detalles',
     collapseDetails: 'Contraer detalles',
     viewSource: 'Ver fuente',
@@ -768,14 +767,15 @@ const translations: Translations = {
     jurisdictionFederal: 'Federal',
     
     // Violation types (for RegulationFinder)
-    violationTypeParking: 'Estacionamiento',
-    violationTypeSpeeding: 'Exceso de Velocidad',
-    violationTypeRedLight: 'Semáforo en Rojo',
-    violationTypeStopSign: 'Señal de Stop',
-    violationTypeRightOfWay: 'Derecho de Paso',
-    violationTypeRegistration: 'Registro de Vehículo',
-    violationTypeDriverLicense: 'Licencia de Conducir',
-    violationTypeGeneral: 'General',
+    violationTypeParking2: 'Estacionamiento',
+    violationTypeSpeeding2: 'Exceso de velocidad',
+    violationTypeRedLight2: 'Semáforo en rojo',
+    violationTypeStopSign2: 'Señal de alto',
+    violationTypeRightOfWay2: 'Derecho de paso',
+    violationTypeRegistration2: 'Registro de vehículo',
+    violationTypeLicense2: 'Licencia de conducir',
+    violationTypeInsurance2: 'Seguro',
+    violationTypeOther2: 'Otro',
     
     // Appeal Text component buttons
     showRegulations: 'Buscar Regulaciones',
@@ -820,10 +820,10 @@ const translations: Translations = {
     duringReviewInfo: 'Tu recurso está siendo revisado actualmente por un oficial. Este proceso generalmente toma 5-10 días hábiles para completarse.',
     pendingDecisionInfo: 'Tu recurso ha sido revisado y se está finalizando una decisión. Deberías recibir la decisión final dentro de 3-5 días hábiles.',
     afterCompletionInfo: 'Tu proceso de recurso ha sido completado. Deberías haber recibido la decisión final. Si no estás de acuerdo con el resultado, puedes tener opciones para un recurso adicional.',
-    afterRejectionInfo: 'Tu recurso ha sido rechazado. Deberías haber recibido detalles sobre el motivo del rechazo. Puedes tener opciones para un recurso secundario dependiendo de tu jurisdicción.',
-    errorFetchingStatus: 'Error al obtener el estado del recurso. Por favor, inténtalo más tarde.',
-    errorOccurred: 'Ocurrió un error',
-    tryAgain: 'Intentar de nuevo',
+    afterRejectionInfo: 'Tu recurso ha sido rechazado. Deberías haber recibido detalles sobre el motivo del rechazo. Es posible que tengas opciones para un recurso secundario según tu jurisdicción.',
+    errorFetchingStatus: 'Error al obtener el estado del recurso. Por favor, inténtalo de nuevo más tarde.',
+    errorOccurred2: 'Ocurrió un error',
+    tryAgain2: 'Intentar de nuevo',
     refreshEvery30Seconds: 'Actualizar cada 30 segundos',
     refreshEveryMinute: 'Actualizar cada minuto',
     refreshEvery5Minutes: 'Actualizar cada 5 minutos',
@@ -834,18 +834,18 @@ const translations: Translations = {
     createNewAppeal: 'Crear Nuevo Recurso',
     allAppeals: 'Todos los Recursos',
     activeAppeals: 'Recursos Activos',
-    completedAppeals: 'Completados',
+    completedAppeals2: 'Completados',
     rejectedAppeals: 'Rechazados',
     sortBy: 'Ordenar por:',
     submissionDate: 'Fecha de Envío',
     status: 'Estado',
-    appealType: 'Tipo de Recurso',
+    appealType2: 'Tipo de Recurso',
     sortAscending: 'Ordenar ascendente',
     sortDescending: 'Ordenar descendente',
     noAppealsFound: 'No se encontraron recursos',
     createAppealToGetStarted: 'Crea un recurso para comenzar',
     violationReason: 'Infracción',
-    fineAmount: 'Multa',
+    fineAmount2: 'Multa',
     errorFetchingAppeals: 'Error al obtener recursos. Por favor, inténtalo más tarde.',
     
     // Appeal Details Page
@@ -853,9 +853,9 @@ const translations: Translations = {
     submittedOn: 'Enviado el',
     fineDetails: 'Detalles de la Multa',
     fineNumber: 'Número de Multa',
-    fineDate: 'Fecha de la Multa',
-    fineReason: 'Motivo',
-    fineLocation: 'Ubicación',
+    fineDate2: 'Fecha de la Multa',
+    fineReason2: 'Motivo',
+    fineLocation2: 'Ubicación',
     officerName: 'Nombre del Oficial',
     appealContent: 'Contenido del Recurso',
     actions: 'Acciones',
@@ -883,7 +883,7 @@ const translations: Translations = {
     // Navigation
     dashboard: 'Panel',
     createAppeal: 'Crear Recurso',
-    myAppeals: 'Mis Recursos',
+    myAppeals2: 'Mis Recursos',
     statistics: 'Estadísticas',
     resources: 'Recursos',
     demo: 'Demo',
@@ -895,8 +895,9 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export function LanguageProvider({ children }: LanguageProviderProps) {
   const [language, setLanguage] = useState<Language>('en');
 
-  const t = (key: keyof typeof translations.en) => {
-    return translations[language][key] || key;
+  const t = (key: keyof typeof translations.en): string => {
+    const translation = translations[language][key] || key;
+    return String(translation);
   };
 
   return (

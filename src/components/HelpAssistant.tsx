@@ -11,7 +11,7 @@ interface Message {
 }
 
 export default function HelpAssistant() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -33,30 +33,35 @@ export default function HelpAssistant() {
   // Check for speech recognition support
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       if (SpeechRecognition) {
         setSpeechSupported(true);
         recognitionRef.current = new SpeechRecognition();
-        recognitionRef.current.continuous = false;
-        recognitionRef.current.interimResults = false;
         
-        recognitionRef.current.onresult = (event: any) => {
-          const transcript = event.results[0][0].transcript;
-          setInputText(prevText => prevText + ' ' + transcript.trim());
-          setIsListening(false);
-        };
-        
-        recognitionRef.current.onerror = (event: any) => {
-          console.error('Speech recognition error', event.error);
-          setIsListening(false);
-        };
-        
-        recognitionRef.current.onend = () => {
-          setIsListening(false);
-        };
+        // Configure recognition
+        if (recognitionRef.current) {
+          recognitionRef.current.continuous = false;
+          recognitionRef.current.interimResults = false;
+          recognitionRef.current.lang = language === 'es' ? 'es-ES' : 'en-US';
+          
+          recognitionRef.current.onresult = (event: any) => {
+            const transcript = event.results[0][0].transcript;
+            setInputText(transcript);
+            handleVoiceQuery(transcript);
+          };
+          
+          recognitionRef.current.onerror = (event: any) => {
+            console.error('Speech recognition error', event.error);
+            setIsListening(false);
+          };
+          
+          recognitionRef.current.onend = () => {
+            setIsListening(false);
+          };
+        }
       }
     }
-  }, []);
+  }, [language]);
   
   // Auto-scroll to the bottom of messages when new ones are added
   useEffect(() => {
@@ -172,6 +177,10 @@ export default function HelpAssistant() {
         timestamp: new Date(),
       },
     ]);
+  };
+  
+  const handleVoiceQuery = (transcript: string) => {
+    // Handle voice query processing
   };
   
   return (

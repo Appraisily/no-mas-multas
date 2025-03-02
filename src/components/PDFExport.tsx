@@ -3,19 +3,29 @@
 import React, { useState } from 'react';
 import { useLanguage } from '@/lib/LanguageContext';
 
+interface FineInfo {
+  id: string;
+  amount: string | number;
+  currency: string;
+  reason: string;
+  date: string;
+  location: string;
+  officerId?: string;
+  badgeNumber?: string;
+  vehicleInfo?: {
+    plate: string;
+    make: string;
+    model: string;
+    year: string;
+    color: string;
+  };
+}
+
 interface PDFExportProps {
   appealText: string;
   appealTitle?: string;
   appealType?: string;
-  fineInfo?: {
-    referenceNumber?: string;
-    date?: string;
-    amount?: string;
-    reason?: string;
-    location?: string;
-    officerName?: string;
-    department?: string;
-  };
+  fineInfo?: FineInfo;
   includeHeader?: boolean;
   includeFooter?: boolean;
 }
@@ -28,54 +38,52 @@ const PDFExport: React.FC<PDFExportProps> = ({
   includeHeader = true,
   includeFooter = true
 }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const handleExportToPDF = async () => {
+  const handleExportToPDF = () => {
+    setIsGenerating(true);
+    
     try {
-      setIsGenerating(true);
+      // Create a new window for the PDF content
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) {
+        alert(t('errorOpeningPrintWindow'));
+        setIsGenerating(false);
+        return;
+      }
       
-      // In a production environment, you'd use a proper PDF library
-      // For this demo, we'll create a printable HTML that looks like a PDF
+      // Format the date
+      const today = new Date();
+      const formattedDate = today.toLocaleDateString(language === 'es' ? 'es-ES' : 'en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
       
-      const today = new Date().toLocaleDateString();
-      const title = appealTitle || t('appealLetter') || 'Appeal Letter';
-      
-      // Create a styled HTML document that will be converted to PDF
+      // Create the HTML content for the PDF
       const htmlContent = `
         <!DOCTYPE html>
-        <html>
+        <html lang="${language === 'es' ? 'es' : 'en'}">
         <head>
-          <meta charset="utf-8" />
-          <title>${title}</title>
+          <meta charset="UTF-8">
+          <title>${appealTitle || t('appealLetter')}</title>
           <style>
             body {
               font-family: Arial, sans-serif;
-              line-height: 1.6;
-              margin: 0;
-              padding: 0;
+              margin: 40px;
+              line-height: 1.5;
               color: #333;
             }
-            .container {
-              max-width: 8.5in;
-              margin: 0 auto;
-              padding: 0.5in;
-              border: 1px solid #eaeaea;
-              box-shadow: 0 0 10px rgba(0,0,0,0.1);
-              background: white;
-            }
             .header {
-              margin-bottom: 30px;
-              display: flex;
-              justify-content: space-between;
-            }
-            .sender {
-              margin-bottom: 20px;
-            }
-            .recipient {
+              text-align: center;
               margin-bottom: 30px;
             }
             .date {
+              text-align: right;
+              margin-bottom: 20px;
+            }
+            .recipient {
               margin-bottom: 30px;
             }
             .subject {
@@ -85,128 +93,96 @@ const PDFExport: React.FC<PDFExportProps> = ({
             .body {
               margin-bottom: 30px;
               text-align: justify;
-              white-space: pre-wrap;
             }
             .signature {
               margin-top: 50px;
             }
             .footer {
               margin-top: 50px;
-              text-align: center;
               font-size: 0.8em;
-              color: #666;
+              text-align: center;
+              color: #777;
             }
             .fine-details {
               margin-bottom: 20px;
               padding: 15px;
-              border: 1px solid #eaeaea;
+              border: 1px solid #ddd;
               background-color: #f9f9f9;
-            }
-            .fine-details h2 {
-              margin-top: 0;
-              font-size: 1.2em;
-              color: #333;
             }
             .fine-details p {
               margin: 5px 0;
             }
-            .logo {
-              font-size: 24px;
-              font-weight: bold;
-              color: #1a56db;
-            }
-            @media print {
-              body {
-                background: white;
-              }
-              .container {
-                border: none;
-                box-shadow: none;
-                padding: 0;
-              }
-              .page-break {
-                page-break-before: always;
-              }
-            }
           </style>
         </head>
         <body>
-          <div class="container">
-            ${includeHeader ? `
+          ${includeHeader ? `
             <div class="header">
-              <div class="logo">No Más Multas</div>
-              <div style="text-align: right;">
-                <div>${today}</div>
-                ${fineInfo?.referenceNumber ? `<div>Ref: ${fineInfo.referenceNumber}</div>` : ''}
-              </div>
+              <h1>${appealTitle || t('appealLetter')}</h1>
             </div>
-            ` : ''}
-
-            ${fineInfo && Object.keys(fineInfo).length > 0 ? `
-            <div class="fine-details">
-              <h2>${t('fineDetails') || 'Fine Details'}</h2>
-              ${fineInfo.referenceNumber ? `<p><strong>${t('referenceNumber') || 'Reference Number'}:</strong> ${fineInfo.referenceNumber}</p>` : ''}
-              ${fineInfo.date ? `<p><strong>${t('date') || 'Date'}:</strong> ${fineInfo.date}</p>` : ''}
-              ${fineInfo.amount ? `<p><strong>${t('amount') || 'Amount'}:</strong> ${fineInfo.amount}</p>` : ''}
-              ${fineInfo.reason ? `<p><strong>${t('reason') || 'Reason'}:</strong> ${fineInfo.reason}</p>` : ''}
-              ${fineInfo.location ? `<p><strong>${t('location') || 'Location'}:</strong> ${fineInfo.location}</p>` : ''}
-              ${fineInfo.officerName ? `<p><strong>${t('officerName') || 'Officer Name'}:</strong> ${fineInfo.officerName}</p>` : ''}
-              ${fineInfo.department ? `<p><strong>${t('department') || 'Department'}:</strong> ${fineInfo.department}</p>` : ''}
-            </div>
-            ` : ''}
-
-            <div class="recipient">
-              <div>${t('toWhomItMayConcern') || 'To Whom It May Concern'}:</div>
-            </div>
-
-            <div class="subject">
-              <strong>${appealTitle || `${t('appealFor') || 'Appeal for'} ${fineInfo?.reason || t('trafficViolation') || 'Traffic Violation'}`}</strong>
-              ${appealType ? ` (${appealType})` : ''}
-            </div>
-
-            <div class="body">
-              ${appealText.replace(/\n/g, '<br>')}
-            </div>
-
-            <div class="signature">
-              <p>${t('sincerely') || 'Sincerely'},</p>
-              <p style="margin-top: 40px;">______________________</p>
-            </div>
-            
-            ${includeFooter ? `
-            <div class="footer">
-              <p>${t('generatedBy') || 'Generated by'} No Más Multas | ${today}</p>
-              <p>${t('confidentialDocument') || 'This document is confidential and intended for the addressee only.'}</p>
-            </div>
-            ` : ''}
+          ` : ''}
+          
+          <div class="date">
+            ${formattedDate}
           </div>
+          
+          <div class="recipient">
+            <p>${t('trafficDepartment')}</p>
+            <p>${fineInfo?.location || t('localAuthority')}</p>
+          </div>
+          
+          ${fineInfo ? `
+            <div class="fine-details">
+              <h3>${t('fineDetails')}</h3>
+              <p><strong>${t('referenceNumber')}:</strong> ${fineInfo.id || '-'}</p>
+              <p><strong>${t('date')}:</strong> ${fineInfo.date || '-'}</p>
+              <p><strong>${t('amount')}:</strong> ${fineInfo.amount || '-'} ${fineInfo.currency || ''}</p>
+              <p><strong>${t('reason')}:</strong> ${fineInfo.reason || '-'}</p>
+              <p><strong>${t('location')}:</strong> ${fineInfo.location || '-'}</p>
+              ${fineInfo.officerId ? `<p><strong>${t('officerName')}:</strong> ${fineInfo.officerId}</p>` : ''}
+              ${fineInfo.badgeNumber ? `<p><strong>${t('badgeNumber')}:</strong> ${fineInfo.badgeNumber}</p>` : ''}
+              ${fineInfo.vehicleInfo ? `
+                <p><strong>${t('vehicle')}:</strong> ${fineInfo.vehicleInfo.year} ${fineInfo.vehicleInfo.make} ${fineInfo.vehicleInfo.model}, ${fineInfo.vehicleInfo.color}</p>
+                <p><strong>${t('licensePlate')}:</strong> ${fineInfo.vehicleInfo.plate}</p>
+              ` : ''}
+            </div>
+          ` : ''}
+          
+          <div class="subject">
+            <p>${t('subject')}: ${appealType ? t(appealType + 'AppealTitle') : t('appealAgainstTrafficFine')}</p>
+          </div>
+          
+          <div class="body">
+            ${appealText.replace(/\n/g, '<br>')}
+          </div>
+          
+          <div class="signature">
+            <p>${t('sincerely')},</p>
+            <p>${t('appellant')}</p>
+          </div>
+          
+          ${includeFooter ? `
+            <div class="footer">
+              <p>${t('generatedBy')} No Más Multas - ${formattedDate}</p>
+            </div>
+          ` : ''}
         </body>
         </html>
       `;
       
-      // Create a new window for printing
-      const printWindow = window.open('', '_blank');
-      if (!printWindow) {
-        alert(t('popupBlocked') || 'Please allow popups to export PDF');
-        setIsGenerating(false);
-        return;
-      }
-      
-      printWindow.document.open();
+      // Write the HTML content to the new window
       printWindow.document.write(htmlContent);
       printWindow.document.close();
       
-      // Wait for resources to load then print
+      // Trigger the print dialog
       setTimeout(() => {
         printWindow.print();
-        printWindow.close();
         setIsGenerating(false);
-      }, 1000);
+      }, 500);
       
     } catch (error) {
       console.error('Error generating PDF:', error);
+      alert(t('errorGeneratingPDF'));
       setIsGenerating(false);
-      alert(t('pdfGenerationError') || 'Error generating PDF. Please try again.');
     }
   };
 
