@@ -244,8 +244,8 @@ export default function AppealDetailsPage() {
             
             <AppealText
               initialText={appeal.content}
-              appealType={appeal.type}
-              fineInfo={appeal.fineInfo}
+              appealType={appeal.type as any}
+              fineInfo={appeal.fineInfo as any}
               appealId={appeal.id}
               readOnly={true}
             />
@@ -296,9 +296,8 @@ export default function AppealDetailsPage() {
             <PDFExport
               appealText={appeal.content}
               appealType={appeal.type}
-              fineInfo={appeal.fineInfo}
+              fineInfo={appeal.fineInfo as any}
               appealTitle={`${t('appealFor') || 'Appeal for'} ${appeal.fineInfo.reason || t('trafficViolation') || 'Traffic Violation'}`}
-              buttonClassName="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white rounded-md transition-colors"
               includeHeader={true}
               includeFooter={true}
             />

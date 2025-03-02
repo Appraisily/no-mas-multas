@@ -375,7 +375,7 @@ export default function Home() {
             
             {appealText && (
               <section className={appealTextClasses}>
-                <AppealText appealText={appealText} />
+                <AppealText initialText={appealText} />
               </section>
             )}
             
