@@ -1,6 +1,8 @@
 import { PDFDocument } from 'pdf-lib';
-import pdfParse from 'pdf-parse';
-import sharp from 'sharp';
+// Only import pdf-parse in server-side code
+const pdfParse = typeof window === 'undefined' ? require('pdf-parse') : null;
+// Only import sharp in server-side code
+const sharp = typeof window === 'undefined' ? require('sharp') : null;
 
 /**
  * Utility functions for file operations
@@ -31,38 +33,64 @@ export const fileToBase64 = (file: File): Promise<string> => {
  * @returns Promise resolving to extracted text
  */
 export const extractTextFromPDF = async (file: File): Promise<string> => {
+  // If running in a browser environment where pdf-parse may not work
+  if (typeof window !== 'undefined' && !pdfParse) {
+    console.warn('PDF text extraction not available in browser environment');
+    return 'PDF text extraction not available in browser environment';
+  }
+  
   try {
     const arrayBuffer = await file.arrayBuffer();
-    const pdfData = new Uint8Array(arrayBuffer);
-    const pdfContent = await pdfParse(pdfData);
-    return pdfContent.text;
+    const buffer = Buffer.from(arrayBuffer);
+    const data = await pdfParse(buffer);
+    return data.text;
   } catch (error) {
     console.error('Error extracting text from PDF:', error);
-    throw error;
+    return '';
   }
 };
 
 /**
- * Process an image file (resize and optimize for AI processing)
+ * Process an image file (resize, optimize)
  * @param file Image file to process
- * @returns Promise resolving to base64 string of processed image
+ * @returns Promise resolving to optimized image data URL
  */
 export const processImage = async (file: File): Promise<string> => {
+  // If running in a browser environment where sharp may not work
+  if (typeof window !== 'undefined' && !sharp) {
+    console.warn('Image processing not available in browser environment');
+    // Return the original image as a data URL
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+  }
+  
   try {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     
-    // Resize and optimize the image for better AI processing
+    // Process the image with sharp
     const processedImageBuffer = await sharp(buffer)
-      .resize(1200, 1200, { fit: 'inside', withoutEnlargement: true })
+      .resize(1000, 1000, { fit: 'inside', withoutEnlargement: true })
       .jpeg({ quality: 85 })
       .toBuffer();
     
-    // Convert to base64
-    return Buffer.from(processedImageBuffer).toString('base64');
+    // Convert processed image to base64
+    const base64 = processedImageBuffer.toString('base64');
+    return `data:image/jpeg;base64,${base64}`;
   } catch (error) {
     console.error('Error processing image:', error);
-    throw error;
+    
+    // Fallback to original image if processing fails
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
   }
 };
 

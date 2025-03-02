@@ -2,77 +2,78 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '@/lib/LanguageContext';
-import AppealComparison from './AppealComparison';
+import RegulationFinder from './RegulationFinder';
+import LegalArgumentGenerator from './LegalArgumentGenerator';
 import PDFExport from './PDFExport';
 import AppealQualityAnalyzer from './AppealQualityAnalyzer';
-import AppealTemplates from './AppealTemplates';
-import LegalArgumentGenerator from './LegalArgumentGenerator';
-import RegulationFinder from './RegulationFinder';
+
+type AppealType = 'procedural' | 'factual' | 'legal' | 'comprehensive';
 
 interface FineInfo {
-  referenceNumber: string;
+  id: string;
+  amount: number;
+  currency: string;
+  reason: string;
   date: string;
-  amount?: string;
-  location?: string;
-  reason?: string;
-  vehicle?: string;
-  fineNumber?: string;
-  officerName?: string;
-  department?: string;
+  location: string;
+  officerId?: string;
+  badgeNumber?: string;
+  vehicleInfo?: {
+    plate: string;
+    make: string;
+    model: string;
+    year: string;
+    color: string;
+  };
 }
 
-interface AppealTextProps {
-  initialText: string;
-  appealType?: 'procedural' | 'factual' | 'legal' | 'comprehensive';
-  fineInfo?: FineInfo;
+export interface AppealTextProps {
+  initialText?: string;
   onTextChange?: (text: string) => void;
-  onAnalyze?: () => void;
   readOnly?: boolean;
+  appealType?: AppealType;
+  fineInfo?: FineInfo;
+  onAnalyze?: () => void;
   appealId?: string;
 }
 
-const AppealText: React.FC<AppealTextProps> = ({ 
-  initialText, 
-  appealType = 'comprehensive',
-  fineInfo,
+const AppealText: React.FC<AppealTextProps> = ({
+  initialText = '',
   onTextChange,
-  onAnalyze,
   readOnly = false,
+  appealType = 'factual',
+  fineInfo,
+  onAnalyze,
   appealId
 }) => {
   const { t } = useLanguage();
   const [text, setText] = useState(initialText);
-  const [showLegalArguments, setShowLegalArguments] = useState(false);
-  const [showRegulations, setShowRegulations] = useState(false);
-  const [violationType, setViolationType] = useState('');
-  const [jurisdiction, setJurisdiction] = useState('');
-  const [isComparing, setIsComparing] = useState(false);
   const [originalText, setOriginalText] = useState(initialText);
+  const [showRegulations, setShowRegulations] = useState(false);
+  const [showLegalArguments, setShowLegalArguments] = useState(false);
+  const [jurisdiction, setJurisdiction] = useState('');
+  const [violationType, setViolationType] = useState('');
+  const [isComparing, setIsComparing] = useState(false);
+  const [showAnalyzer, setShowAnalyzer] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    setText(initialText);
-    setOriginalText(initialText);
-  }, [initialText]);
-
-  useEffect(() => {
+    // Extract jurisdiction and violation type from fine info
     if (fineInfo) {
-      let vType = '';
-      if (fineInfo.reason) {
-        const reason = fineInfo.reason.toLowerCase();
-        if (reason.includes('parking')) vType = 'parking';
-        else if (reason.includes('speed')) vType = 'speeding';
-        else if (reason.includes('red light')) vType = 'red_light';
-        else if (reason.includes('stop sign')) vType = 'stop_sign';
-        else vType = 'other';
-      }
-      setViolationType(vType);
-      
+      // Extract jurisdiction from location
+      // This is a simplified approach, in a real app you would have a more robust way to determine jurisdiction
       if (fineInfo.location) {
-        const locationParts = fineInfo.location.split(',');
-        if (locationParts.length > 1) {
-          setJurisdiction(locationParts[locationParts.length - 1].trim());
+        const parts = fineInfo.location.split(',');
+        if (parts.length > 1) {
+          setJurisdiction(parts[parts.length - 1].trim());
+        } else {
+          setJurisdiction(fineInfo.location);
         }
+      }
+      
+      // Use the reason as violation type
+      if (fineInfo.reason) {
+        setViolationType(fineInfo.reason);
       }
     }
   }, [fineInfo]);
@@ -80,14 +81,21 @@ const AppealText: React.FC<AppealTextProps> = ({
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newText = e.target.value;
     setText(newText);
-    if (onTextChange) onTextChange(newText);
+    if (onTextChange) {
+      onTextChange(newText);
+    }
   };
 
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(text);
-    } catch (err) {
-      console.error('Failed to copy text: ', err);
+  const handleCopy = () => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+    } else {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
     }
   };
 
@@ -226,6 +234,26 @@ const AppealText: React.FC<AppealTextProps> = ({
     setShowRegulations(false);
   };
 
+  // New handler for applying suggestions from the quality analyzer
+  const handleApplySuggestion = (originalText: string, replacementText: string) => {
+    if (readOnly) return;
+    
+    // Find the text to replace
+    const index = text.indexOf(originalText);
+    if (index === -1) return;
+    
+    // Replace the text
+    const newText = text.substring(0, index) + replacementText + text.substring(index + originalText.length);
+    setText(newText);
+    if (onTextChange) onTextChange(newText);
+  };
+
+  // Toggle appeal analyzer
+  const toggleAnalyzer = () => {
+    setShowAnalyzer(!showAnalyzer);
+    if (onAnalyze) onAnalyze();
+  };
+
   return (
     <div className="space-y-4">
       <div className="relative border rounded-lg dark:border-gray-700 overflow-hidden">
@@ -298,10 +326,10 @@ const AppealText: React.FC<AppealTextProps> = ({
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                {t('legalArguments') || "Legal Arguments"}
+                {t('legalArguments') || "Legal Args"}
               </span>
             </button>
-
+            
             <button
               type="button"
               onClick={() => setShowRegulations(!showRegulations)}
@@ -312,27 +340,44 @@ const AppealText: React.FC<AppealTextProps> = ({
             >
               <span className="flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
                 {t('regulations') || "Regulations"}
               </span>
             </button>
 
-            <div className="ml-auto">
-              <button
-                type="button"
-                onClick={handleCompare}
-                className="px-2 py-1 rounded text-sm hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
-              >
-                <span className="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                  {t('compareChanges') || "Compare"}
-                </span>
-              </button>
-            </div>
+            <span className="border-l dark:border-gray-700 mx-1"></span>
+            
+            <button
+              type="button"
+              onClick={handleCompare}
+              className="px-2 py-1 rounded text-sm hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+            >
+              <span className="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                {t('compareChanges') || "Compare"}
+              </span>
+            </button>
+
+            {/* New analyze appeal button */}
+            <button
+              type="button"
+              onClick={toggleAnalyzer}
+              className={`px-2 py-1 rounded text-sm ${
+                showAnalyzer ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' : 'hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+              }`}
+              title={t('analyzeAppeal') || "Analyze Appeal"}
+            >
+              <span className="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                {t('analyze') || "Analyze"}
+              </span>
+            </button>
           </div>
         )}
         
@@ -448,6 +493,16 @@ const AppealText: React.FC<AppealTextProps> = ({
           </div>
         )}
       </div>
+      
+      {/* Appeal Quality Analyzer integration */}
+      {showAnalyzer && (
+        <AppealQualityAnalyzer 
+          appealText={text} 
+          appealType={appealType || 'factual'} 
+          autoAnalyze={true}
+          onApplySuggestion={handleApplySuggestion}
+        />
+      )}
       
       {/* Regulation Finder */}
       {showRegulations && (

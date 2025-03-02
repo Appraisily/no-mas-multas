@@ -73,6 +73,7 @@ export default function Navigation() {
     { path: '/my-appeals', label: t('myAppeals') || 'My Appeals' },
     { path: '/statistics', label: t('statistics') || 'Statistics' },
     { path: '/resources', label: t('resources') || 'Resources' },
+    { path: '/demo', label: t('demo') || 'Demo' },
   ];
   
   return (

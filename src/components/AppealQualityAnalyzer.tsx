@@ -10,50 +10,57 @@ interface QualityMetrics {
   persuasiveness: number;
   professionalism: number;
   relevance: number;
+  confidence: number;
   overall: number;
   suggestions: string[];
   strengths: string[];
+  issueHighlights?: IssueHighlight[];
+}
+
+interface IssueHighlight {
+  type: 'warning' | 'error' | 'suggestion';
+  text: string;
+  reason: string;
+  replacement?: string;
 }
 
 interface AppealQualityAnalyzerProps {
   appealText: string;
   appealType: AppealType;
   autoAnalyze?: boolean;
+  onApplySuggestion?: (originalText: string, replacementText: string) => void;
 }
 
 export default function AppealQualityAnalyzer({ 
   appealText, 
   appealType, 
-  autoAnalyze = false 
+  autoAnalyze = false,
+  onApplySuggestion
 }: AppealQualityAnalyzerProps) {
   const { t } = useLanguage();
   const [analyzing, setAnalyzing] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [metrics, setMetrics] = useState<QualityMetrics | null>(null);
   const [lastAnalyzedText, setLastAnalyzedText] = useState('');
+  const [showTextAnalysis, setShowTextAnalysis] = useState(false);
+  const [progressPercentage, setProgressPercentage] = useState(0);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Auto analyze with debounce when text changes
   useEffect(() => {
-    // Only auto analyze if the feature is enabled
     if (autoAnalyze && appealText) {
-      // Don't analyze very short text or if it's the same as last analyzed
       if (appealText.length < 50 || appealText === lastAnalyzedText) {
         return;
       }
       
-      // Clear any existing timer
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current);
       }
       
-      // Set a new timer to analyze after user stops typing
       debounceTimerRef.current = setTimeout(() => {
         analyzeAppeal();
-      }, 2000); // 2 second debounce
+      }, 2000);
     }
     
-    // Cleanup function to clear the timer if the component unmounts
     return () => {
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current);
@@ -65,45 +72,56 @@ export default function AppealQualityAnalyzer({
     if (!appealText.trim() || analyzing) return;
 
     setAnalyzing(true);
+    setProgressPercentage(0);
     
     try {
-      // In a real app, this would be an API call
+      const progressInterval = setInterval(() => {
+        setProgressPercentage(prev => {
+          const newValue = prev + Math.random() * 15;
+          return newValue >= 90 ? 90 : newValue;
+        });
+      }, 200);
+      
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Calculate metrics based on appeal text
       const clarity = calculateClarity(appealText);
       const persuasiveness = calculatePersuasiveness(appealText, appealType);
       const professionalism = calculateProfessionalism(appealText);
       const relevance = calculateRelevance(appealText, appealType);
+      const confidence = calculateConfidence(appealText);
       
-      // Calculate overall score (weighted average)
       const overall = Math.round(
-        (clarity * 0.25 + persuasiveness * 0.3 + professionalism * 0.2 + relevance * 0.25) * 10
+        (clarity * 0.2 + persuasiveness * 0.25 + professionalism * 0.15 + relevance * 0.2 + confidence * 0.2) * 10
       ) / 10;
       
-      // Generate suggestions and strengths
       const suggestions = generateSuggestions(
         appealText, 
         appealType, 
-        { clarity, persuasiveness, professionalism, relevance }
+        { clarity, persuasiveness, professionalism, relevance, confidence, overall: 0, suggestions: [], strengths: [] }
       );
       const strengths = generateStrengths(
         appealText, 
         appealType, 
-        { clarity, persuasiveness, professionalism, relevance }
+        { clarity, persuasiveness, professionalism, relevance, confidence, overall: 0, suggestions: [], strengths: [] }
       );
+      
+      const issueHighlights = identifyTextIssues(appealText, appealType);
+      
+      clearInterval(progressInterval);
+      setProgressPercentage(100);
       
       setMetrics({ 
         clarity, 
         persuasiveness, 
         professionalism, 
-        relevance, 
+        relevance,
+        confidence,
         overall,
         suggestions,
-        strengths
+        strengths,
+        issueHighlights
       });
       
-      // Set the analyzing flag to false after a delay for UX
       setTimeout(() => {
         setAnalyzing(false);
         setExpanded(true);
@@ -112,18 +130,59 @@ export default function AppealQualityAnalyzer({
     } catch (error) {
       console.error('Error analyzing appeal:', error);
       setAnalyzing(false);
+      setProgressPercentage(0);
     }
   };
   
+  const calculateConfidence = (text: string): number => {
+    const lowerText = text.toLowerCase();
+    
+    const confidenceTerms = [
+      'certainly', 'definitely', 'clearly', 'undoubtedly', 'without a doubt',
+      'confident', 'firmly', 'strongly', 'assert', 'maintain', 'emphasize'
+    ];
+    
+    const uncertaintyTerms = [
+      'maybe', 'perhaps', 'possibly', 'might', 'could be', 'sort of',
+      'kind of', 'i think', 'i believe', 'in my opinion', 'not sure'
+    ];
+    
+    let confidenceCount = 0;
+    let uncertaintyCount = 0;
+    
+    confidenceTerms.forEach(term => {
+      if (lowerText.includes(term)) confidenceCount++;
+    });
+    
+    uncertaintyTerms.forEach(term => {
+      if (lowerText.includes(term)) uncertaintyCount++;
+    });
+    
+    const passiveVoiceIndicators = [
+      'was done', 'were made', 'have been', 'has been', 'was given',
+      'is being', 'was being', 'been', 'be made', 'be given'
+    ];
+    
+    let passiveCount = 0;
+    passiveVoiceIndicators.forEach(term => {
+      if (lowerText.includes(term)) passiveCount++;
+    });
+    
+    let confidenceScore = 3;
+    confidenceScore += confidenceCount * 0.3;
+    confidenceScore -= uncertaintyCount * 0.4;
+    confidenceScore -= passiveCount * 0.3;
+    
+    return Math.max(1, Math.min(5, confidenceScore));
+  };
+  
   const calculateClarity = (text: string): number => {
-    // Simple heuristic - average sentence length (shorter is clearer, up to a point)
     const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
     if (sentences.length === 0) return 0;
     
     const avgSentenceLength = text.length / sentences.length;
     const paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 0);
     
-    // Score based on sentence length (ideal: 15-25 words)
     let clarityScore = 0;
     if (avgSentenceLength < 10) clarityScore = 3.5;
     else if (avgSentenceLength < 15) clarityScore = 4;
@@ -132,7 +191,6 @@ export default function AppealQualityAnalyzer({
     else if (avgSentenceLength < 45) clarityScore = 3;
     else clarityScore = 2;
     
-    // Bonus for having multiple paragraphs (better structure)
     if (paragraphs.length > 1) clarityScore = Math.min(5, clarityScore + 0.5);
     if (paragraphs.length > 3) clarityScore = Math.min(5, clarityScore + 0.5);
     
@@ -142,7 +200,6 @@ export default function AppealQualityAnalyzer({
   const calculatePersuasiveness = (text: string, type: AppealType): number => {
     const lowerText = text.toLowerCase();
     
-    // Check for persuasive language patterns
     const persuasiveTerms = [
       'because', 'therefore', 'consequently', 'evidence', 'proof', 'demonstrates',
       'clearly', 'shows', 'indicates', 'proves', 'according to', 'law', 'regulation',
@@ -156,10 +213,8 @@ export default function AppealQualityAnalyzer({
       if (matches) persuasiveCount += matches.length;
     });
     
-    // Calculate base score
     let persuasiveScore = Math.min(5, 2 + (persuasiveCount / 5));
     
-    // Adjust for appeal type
     if (type === 'legal' && lowerText.includes('code') && lowerText.includes('section')) {
       persuasiveScore = Math.min(5, persuasiveScore + 0.5);
     }
@@ -174,27 +229,23 @@ export default function AppealQualityAnalyzer({
   const calculateProfessionalism = (text: string): number => {
     const lowerText = text.toLowerCase();
     
-    // Check for professional tone and format
     const formalGreeting = /dear sir|madam|to whom it may concern|respect/i.test(text);
     const formalClosing = /sincerely|respectfully|thank you for your consideration/i.test(text);
     const noSlang = !/gonna|wanna|gotta|ya|u r|lol|omg/i.test(text);
     
-    // Presence of date, reference numbers, etc.
     const hasDate = /\b\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}\b|\b(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2},\s+\d{4}\b/i.test(text);
     
-    let professionalismScore = 3; // Base score
+    let professionalismScore = 3;
     
     if (formalGreeting) professionalismScore += 0.5;
     if (formalClosing) professionalismScore += 0.5;
     if (noSlang) professionalismScore += 0.5;
     if (hasDate) professionalismScore += 0.5;
     
-    // Penalty for all caps sections (shouting)
     if (/[A-Z]{10,}/.test(text)) {
       professionalismScore = Math.max(1, professionalismScore - 1);
     }
     
-    // Penalty for excessive exclamation marks
     const exclamationCount = (text.match(/!/g) || []).length;
     if (exclamationCount > 3) {
       professionalismScore = Math.max(1, professionalismScore - 0.5);
@@ -206,8 +257,7 @@ export default function AppealQualityAnalyzer({
   const calculateRelevance = (text: string, type: AppealType): number => {
     const lowerText = text.toLowerCase();
     
-    // Different relevance checks based on appeal type
-    let relevanceScore = 3; // Base score
+    let relevanceScore = 3;
     
     if (type === 'procedural') {
       const proceduralTerms = ['procedure', 'process', 'notice', 'notification', 'issued', 'served', 'delivery', 'mail', 'email', 'dated', 'deadline', 'timeframe', 'period'];
@@ -243,7 +293,6 @@ export default function AppealQualityAnalyzer({
     }
     
     else if (type === 'comprehensive') {
-      // Check for a mix of all types
       const allTerms = [
         'procedure', 'process', 'notice', 'evidence', 'fact', 'law', 'regulation', 'code',
         'incorrect', 'inaccurate', 'section', 'statute', 'rights', 'deadline', 'location'
@@ -259,7 +308,6 @@ export default function AppealQualityAnalyzer({
       if (lowerText.includes('fact') || lowerText.includes('evidence') || lowerText.includes('incorrect')) categoryCount.factual++;
       if (lowerText.includes('law') || lowerText.includes('regulation') || lowerText.includes('code')) categoryCount.legal++;
       
-      // More comprehensive is better
       const categoriesUsed = Object.values(categoryCount).filter(count => count > 0).length;
       relevanceScore += Math.min(2, categoriesUsed);
     }
@@ -267,14 +315,98 @@ export default function AppealQualityAnalyzer({
     return Math.min(5, relevanceScore);
   };
   
+  const identifyTextIssues = (text: string, type: AppealType): IssueHighlight[] => {
+    const issues: IssueHighlight[] = [];
+    const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+    
+    sentences.forEach(sentence => {
+      if (sentence.length > 200) {
+        issues.push({
+          type: 'warning',
+          text: sentence.trim(),
+          reason: t('longSentenceWarning'),
+          replacement: 'Consider breaking this into multiple shorter sentences for clarity.'
+        });
+      }
+    });
+    
+    const passivePatterns = [
+      'was done', 'were made', 'have been', 'has been', 'was given',
+      'is being', 'was being', 'been', 'be made', 'be given'
+    ];
+    
+    passivePatterns.forEach(pattern => {
+      const regex = new RegExp(`\\b${pattern}\\b`, 'gi');
+      let match;
+      
+      while ((match = regex.exec(text)) !== null) {
+        const startOfSentence = text.lastIndexOf('.', match.index) + 1;
+        const endOfSentence = text.indexOf('.', match.index + pattern.length);
+        const sentenceText = text.substring(
+          startOfSentence >= 0 ? startOfSentence : 0,
+          endOfSentence >= 0 ? endOfSentence + 1 : text.length
+        ).trim();
+        
+        issues.push({
+          type: 'suggestion',
+          text: sentenceText,
+          reason: t('passiveVoiceSuggestion'),
+          replacement: 'Consider using active voice for more impact and clarity.'
+        });
+      }
+    });
+    
+    const weakPhrases = [
+      'kind of', 'sort of', 'pretty much', 'basically', 'for the most part',
+      'more or less', 'probably', 'definitely', 'maybe', 'perhaps'
+    ];
+    
+    weakPhrases.forEach(phrase => {
+      const regex = new RegExp(`\\b${phrase}\\b`, 'gi');
+      let match;
+      
+      while ((match = regex.exec(text)) !== null) {
+        const start = Math.max(0, match.index - 30);
+        const end = Math.min(text.length, match.index + phrase.length + 30);
+        const context = text.substring(start, end);
+        
+        issues.push({
+          type: 'suggestion',
+          text: context,
+          reason: t('weakPhraseSuggestion'),
+          replacement: `Replace "${phrase}" with more definitive language.`
+        });
+      }
+    });
+    
+    if (type === 'legal' && !text.toLowerCase().includes('section') && !text.toLowerCase().includes('code')) {
+      issues.push({
+        type: 'error',
+        text: '',
+        reason: t('missingLegalReferences'),
+        replacement: 'Include specific legal references (sections, codes) to strengthen your legal argument.'
+      });
+    }
+    
+    if (type === 'factual' && !text.toLowerCase().includes('evidence') && !text.toLowerCase().includes('proof')) {
+      issues.push({
+        type: 'error',
+        text: '',
+        reason: t('missingEvidenceReference'),
+        replacement: 'Mention specific evidence or proof to support your factual claims.'
+      });
+    }
+    
+    return issues;
+  };
+  
   const generateSuggestions = (
     text: string, 
     type: AppealType, 
-    scores: { clarity: number; persuasiveness: number; professionalism: number; relevance: number }
+    scores: { clarity: number; persuasiveness: number; professionalism: number; relevance: number; confidence: number; overall: number; suggestions: string[]; strengths: string[] }
   ): string[] => {
     const suggestions: string[] = [];
     
-    // General suggestions based on scores
     if (scores.clarity < 3.5) {
       suggestions.push(t('suggestFormatting'));
     }
@@ -291,7 +423,10 @@ export default function AppealQualityAnalyzer({
       }
     }
     
-    // Specific suggestions based on appeal type
+    if (scores.confidence < 3.5) {
+      suggestions.push(t('suggestConfidence') || 'Use more assertive language and active voice to sound more confident.');
+    }
+    
     if (type === 'procedural' && scores.relevance < 4) {
       suggestions.push(t('suggestProcedural'));
     } else if (type === 'factual' && scores.relevance < 4) {
@@ -303,22 +438,20 @@ export default function AppealQualityAnalyzer({
       suggestions.push(t('suggestComprehensive'));
     }
     
-    // Word count based suggestions
     if (text.length < 200) {
       suggestions.push(t('suggestMoreDetail'));
     }
     
-    return suggestions.slice(0, 3); // Limit to 3 suggestions
+    return suggestions.slice(0, 3);
   };
   
   const generateStrengths = (
     text: string, 
     type: AppealType, 
-    scores: { clarity: number; persuasiveness: number; professionalism: number; relevance: number }
+    scores: { clarity: number; persuasiveness: number; professionalism: number; relevance: number; confidence: number; overall: number; suggestions: string[]; strengths: string[] }
   ): string[] => {
     const strengths: string[] = [];
     
-    // Add strengths based on high scores
     if (scores.clarity >= 4) {
       strengths.push(t('strengthClarity'));
     }
@@ -331,7 +464,10 @@ export default function AppealQualityAnalyzer({
       strengths.push(t('strengthProfessional'));
     }
     
-    // Type-specific strengths
+    if (scores.confidence >= 4) {
+      strengths.push(t('strengthConfidence') || 'Your appeal sounds confident and authoritative.');
+    }
+    
     if (type === 'procedural' && scores.relevance >= 4) {
       strengths.push(t('strengthProcedural'));
     } else if (type === 'factual' && scores.relevance >= 4) {
@@ -342,7 +478,7 @@ export default function AppealQualityAnalyzer({
       strengths.push(t('strengthComprehensive'));
     }
     
-    return strengths.slice(0, 3); // Limit to 3 strengths
+    return strengths.slice(0, 3);
   };
 
   const getScoreLabel = (score: number): string => {
@@ -361,6 +497,12 @@ export default function AppealQualityAnalyzer({
     if (score >= 3.0) return 'text-yellow-500 dark:text-yellow-400';
     if (score >= 2.0) return 'text-amber-500 dark:text-amber-400';
     return 'text-red-500 dark:text-red-400';
+  };
+  
+  const handleApplySuggestion = (originalText: string, replacementText: string) => {
+    if (onApplySuggestion) {
+      onApplySuggestion(originalText, replacementText);
+    }
   };
   
   return (
@@ -388,27 +530,54 @@ export default function AppealQualityAnalyzer({
         )}
         
         {analyzing && (
-          <div className="flex items-center">
-            <svg 
-              className="animate-spin -ml-1 mr-3 h-5 w-5 text-purple-600" 
-              xmlns="http://www.w3.org/2000/svg" 
-              fill="none" 
-              viewBox="0 0 24 24"
-            >
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            {t('analyzing')}
+          <div className="flex flex-col items-end">
+            <div className="flex items-center mb-1">
+              <svg 
+                className="animate-spin -ml-1 mr-3 h-5 w-5 text-purple-600" 
+                xmlns="http://www.w3.org/2000/svg" 
+                fill="none" 
+                viewBox="0 0 24 24"
+              >
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              {t('analyzing')}
+            </div>
+            <div className="w-48 bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+              <div 
+                className="bg-purple-600 h-2.5 rounded-full transition-all duration-300" 
+                style={{ width: `${progressPercentage}%` }}
+              ></div>
+            </div>
           </div>
         )}
         
         {metrics && (
-          <button
-            onClick={() => setExpanded(!expanded)}
-            className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300"
-          >
-            {expanded ? t('collapse') : t('expand')}
-          </button>
+          <div className="flex space-x-3">
+            {metrics.issueHighlights && metrics.issueHighlights.length > 0 && (
+              <button
+                onClick={() => setShowTextAnalysis(!showTextAnalysis)}
+                className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 flex items-center"
+              >
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  className="h-5 w-5 mr-1" 
+                  viewBox="0 0 20 20" 
+                  fill="currentColor"
+                >
+                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                  <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                </svg>
+                {showTextAnalysis ? t('hideTextAnalysis') || "Hide Issues" : t('showTextAnalysis') || "Show Issues"}
+              </button>
+            )}
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300"
+            >
+              {expanded ? t('collapse') : t('expand')}
+            </button>
+          </div>
         )}
       </div>
       
@@ -428,7 +597,7 @@ export default function AppealQualityAnalyzer({
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
             <div>
               <h4 className="text-md font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 {t('clarity')}
@@ -484,7 +653,61 @@ export default function AppealQualityAnalyzer({
                 </div>
               </div>
             </div>
+            
+            <div>
+              <h4 className="text-md font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                {t('confidence') || "Confidence"}
+              </h4>
+              <div className="flex items-center">
+                <div className={`text-xl font-bold ${getScoreColor(metrics.confidence)}`}>
+                  {metrics.confidence.toFixed(1)}
+                </div>
+                <div className="ml-2 text-gray-500 dark:text-gray-400">
+                  /5.0
+                </div>
+              </div>
+            </div>
           </div>
+          
+          {showTextAnalysis && metrics.issueHighlights && metrics.issueHighlights.length > 0 && (
+            <div className="mb-6 border rounded-lg p-4 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+              <h4 className="text-md font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                {t('textIssues') || "Text Issues"}
+              </h4>
+              <div className="space-y-3">
+                {metrics.issueHighlights.map((issue, index) => (
+                  <div key={index} className="border-l-4 pl-3 py-1 mb-2 dark:border-gray-700 bg-white dark:bg-gray-750 rounded shadow-sm"
+                    style={{ borderLeftColor: issue.type === 'error' ? '#ef4444' : issue.type === 'warning' ? '#f59e0b' : '#3b82f6' }}>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="text-sm font-medium mb-1">
+                          {issue.text ? (
+                            <span className="bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-100 px-1 py-0.5 rounded">
+                              {issue.text.length > 100 ? issue.text.substring(0, 100) + '...' : issue.text}
+                            </span>
+                          ) : (
+                            <span className="italic text-gray-500 dark:text-gray-400">{t('generalIssue') || "General Issue"}</span>
+                          )}
+                        </div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">{issue.reason}</div>
+                        {issue.replacement && (
+                          <div className="mt-1 text-sm text-blue-600 dark:text-blue-400 italic">{issue.replacement}</div>
+                        )}
+                      </div>
+                      {issue.text && issue.replacement && onApplySuggestion && (
+                        <button
+                          onClick={() => handleApplySuggestion(issue.text, issue.replacement)}
+                          className="text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800 px-2 py-1 rounded"
+                        >
+                          {t('applySuggestion') || "Apply"}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           
           {metrics.suggestions.length > 0 && (
             <div className="mb-4">

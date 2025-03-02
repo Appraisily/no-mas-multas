@@ -26,7 +26,7 @@ export default function LegalArgumentGenerator({
 }: LegalArgumentGeneratorProps) {
   const { t, language } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
-  const [arguments, setArguments] = useState<LegalArgument[]>([]);
+  const [legalArguments, setLegalArguments] = useState<LegalArgument[]>([]);
   const [selectedArgumentId, setSelectedArgumentId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -129,7 +129,7 @@ export default function LegalArgumentGenerator({
         
         // Get arguments based on violation type or fallback to general
         const relevantArgs = mockArguments[violationType] || mockArguments['general'];
-        setArguments(relevantArgs);
+        setLegalArguments(relevantArgs);
       } catch (err) {
         console.error('Error fetching legal arguments:', err);
         setError(language === 'en' ? 'Failed to load legal arguments' : 'Error al cargar argumentos legales');
@@ -143,7 +143,7 @@ export default function LegalArgumentGenerator({
 
   const handleSelectArgument = (id: string) => {
     setSelectedArgumentId(id);
-    const selectedArg = arguments.find(arg => arg.id === id);
+    const selectedArg = legalArguments.find(arg => arg.id === id);
     if (selectedArg) {
       onSelectArgument(selectedArg.appealText);
     }
@@ -169,12 +169,12 @@ export default function LegalArgumentGenerator({
         </div>
       ) : (
         <div className="space-y-4">
-          {arguments.length === 0 ? (
+          {legalArguments.length === 0 ? (
             <p className="text-gray-600 dark:text-gray-400 text-center py-4">
               {t('noArgumentsFound')}
             </p>
           ) : (
-            arguments.map((arg) => (
+            legalArguments.map((arg) => (
               <div 
                 key={arg.id}
                 className={`border rounded-lg p-4 transition-all ${
