@@ -18,6 +18,15 @@ A modern web application to help users contest traffic and parking fines by gene
 - **Export & Print Options**: Save appeals as text, PDF, or print directly
 - **Enhanced Accessibility**: Keyboard shortcuts, accessible form components, and a floating help system
 - **Floating Help Button**: Quick access to guides, tutorials, and frequently asked questions
+- **AI-Powered Legal Argument Generator**: Create custom legal arguments based on your specific traffic violation scenario.
+- **Multi-language Support**: Available in both English and Spanish to serve a wider community.
+- **Appeal Template System**: Access professionally formatted legal appeal templates.
+- **Appeal Tracking**: Monitor the status and progress of your submitted appeals.
+- **Dark Mode Support**: Comfortable viewing experience in any lighting condition.
+- **Accessibility Focused**: Designed to be accessible for all users, including those with disabilities.
+- **Fine Calculator**: Estimate potential fines and calculate potential savings from successful appeals.
+- **Legal Deadline Tracker**: Keep track of important dates and deadlines for your traffic ticket appeals, ensuring you never miss a crucial deadline with visual reminders and priority settings.
+- **Toast Notification System**: Get real-time feedback on your actions with an accessible notification system.
 
 ## Tech Stack
 
@@ -98,6 +107,16 @@ A context-aware help system that provides:
 - Frequently asked questions
 - Responsive design for all device sizes
 - Keyboard accessible interface
+- Toast notifications for user feedback
+
+### Toast Notification System
+A flexible notification system for providing feedback to users:
+- Success, error, warning, and info notification types
+- Customizable duration and styling
+- Accessible design with proper ARIA attributes
+- Automatic dismissal with manual close option
+- Animated entrance and exit for better UX
+- Context-based messaging
 
 ### Legal Argument Generator
 Access a database of legally sound arguments tailored to specific violation types. Each argument includes:
@@ -137,35 +156,31 @@ A central hub for managing all aspects of your appeals:
 
 ## Project Structure
 
-```
-no-mas-multas/
-├── public/           # Static assets
-├── src/
-│   ├── app/          # Next.js app directory
-│   │   ├── api/      # API routes
-│   │   └── page.tsx  # Main page component
-│   ├── components/   # React components
-│   │   ├── AccessibleInput.tsx         # Accessible form components
-│   │   ├── AppealQualityAnalyzer.tsx   # Appeal quality analysis
-│   │   ├── AppealStats.tsx             # Appeal statistics
-│   │   ├── AppealTemplates.tsx         # Templates management
-│   │   ├── AppealText.tsx              # Appeal text editor
-│   │   ├── Dashboard.tsx               # User dashboard
-│   │   ├── FloatingHelpButton.tsx      # Floating help system
-│   │   ├── KeyboardShortcutsDialog.tsx # Keyboard shortcuts help
-│   │   ├── LegalArgumentGenerator.tsx  # Legal arguments
-│   │   ├── LoadingSpinner.tsx          # Loading indicators
-│   │   ├── Navigation.tsx              # Site navigation
-│   │   └── ThemeSwitcher.tsx           # Theme toggle component
-│   ├── lib/          # Utility functions and contexts
-│   │   ├── cookieHelper.ts             # Cookie management
-│   │   ├── LanguageContext.tsx         # Multilingual support
-│   │   ├── ThemeContext.tsx            # Theme management
-│   │   └── useKeyboardShortcuts.tsx    # Keyboard shortcuts hooks
-│   └── types.ts      # TypeScript types
-├── .env.local.example # Environment variables example
-└── package.json     # Project dependencies
-```
+The project follows a clean, modular structure:
+
+- `src/`: Main source code directory
+  - `app/`: Next.js app directory
+    - `page.tsx`: Home page
+    - `layout.tsx`: Root layout component
+    - `appeal/`: Appeal creation pages
+    - `dashboard/`: User dashboard pages
+    - `deadlines/`: Legal deadline tracker pages
+  - `components/`: Reusable React components
+    - `AccessibleInput.tsx`: Accessible form input components
+    - `AppealOptionsForm.tsx`: Form for selecting appeal options
+    - `FloatingHelpButton.tsx`: Help button with quick access to resources
+    - `Navigation.tsx`: Main navigation bar
+    - `ThemeSwitcher.tsx`: Component for switching between light/dark themes
+    - `ToastNotification.tsx`: Toast notification system
+    - `KeyboardShortcutsDialog.tsx`: Dialog displaying keyboard shortcuts
+    - `FineCalculator.tsx`: Tool to calculate fines and potential savings
+    - `DeadlineTracker.tsx`: Component to track legal deadlines for appeals
+  - `lib/`: Utility functions and context providers
+    - `ThemeContext.tsx`: Context for theme management
+    - `LanguageContext.tsx`: Context for language/localization
+    - `useKeyboardShortcuts.tsx`: Hook for keyboard shortcuts functionality
+  - `styles/`: CSS and styling files
+  - `public/`: Static assets
 
 ## API Endpoints
 

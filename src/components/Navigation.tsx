@@ -8,6 +8,7 @@ import { useTheme } from '@/lib/ThemeContext';
 import { useKeyboardShortcuts } from '@/lib/useKeyboardShortcuts';
 import ThemeSwitcher from './ThemeSwitcher';
 import KeyboardShortcutsDialog from './KeyboardShortcutsDialog';
+import { HomeIcon, ChartBarIcon, DocumentPlusIcon, DocumentTextIcon, CalendarIcon } from '@heroicons/react/24/outline';
 
 export default function Navigation() {
   const { t, language, setLanguage } = useLanguage();
@@ -119,14 +120,13 @@ export default function Navigation() {
     return pathname?.startsWith(path);
   };
   
-  const navLinks = [
-    { path: '/', label: t('home') || 'Home' },
-    { path: '/dashboard', label: t('dashboard') || 'Dashboard' },
-    { path: '/create-appeal', label: t('createAppeal') || 'Create Appeal' },
-    { path: '/my-appeals', label: t('myAppeals') || 'My Appeals' },
-    { path: '/statistics', label: t('statistics') || 'Statistics' },
-    { path: '/resources', label: t('resources') || 'Resources' },
-    { path: '/demo', label: t('demo') || 'Demo' },
+  // Define main navigation links
+  const mainNavLinks = [
+    { href: '/', label: 'home', icon: <HomeIcon className="h-5 w-5" /> },
+    { href: '/dashboard', label: 'dashboard', icon: <ChartBarIcon className="h-5 w-5" /> },
+    { href: '/appeals/new', label: 'newAppeal', icon: <DocumentPlusIcon className="h-5 w-5" /> },
+    { href: '/appeals', label: 'myAppeals', icon: <DocumentTextIcon className="h-5 w-5" /> },
+    { href: '/deadlines', label: 'deadlineTracker', icon: <CalendarIcon className="h-5 w-5" /> },
   ];
   
   return (
@@ -162,12 +162,12 @@ export default function Navigation() {
             {/* Desktop Navigation */}
             <div className="hidden md:block">
               <div className="ml-10 flex items-center space-x-4">
-                {navLinks.map((link) => (
+                {mainNavLinks.map((link) => (
                   <Link
-                    key={link.path}
-                    href={link.path}
+                    key={link.href}
+                    href={link.href}
                     className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                      isActive(link.path)
+                      isActive(link.href)
                         ? 'bg-blue-600 text-white'
                         : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                     }`}
@@ -309,12 +309,12 @@ export default function Navigation() {
       {/* Mobile menu, show/hide based on menu state */}
       <div className={`md:hidden transition-all duration-300 ${isMenuOpen ? 'max-h-screen' : 'max-h-0 overflow-hidden'}`} id="mobile-menu">
         <div className="px-2 pt-2 pb-3 space-y-1 border-t border-gray-200 dark:border-gray-700">
-          {navLinks.map((link) => (
+          {mainNavLinks.map((link) => (
             <Link
-              key={link.path}
-              href={link.path}
+              key={link.href}
+              href={link.href}
               className={`block px-3 py-2 rounded-md text-base font-medium ${
-                isActive(link.path)
+                isActive(link.href)
                   ? 'bg-blue-600 text-white'
                   : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
               }`}
