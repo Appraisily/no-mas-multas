@@ -296,7 +296,7 @@ export default function DeadlineTracker() {
               { value: 'appeal', label: t('categoryAppeal') || 'Appeal' },
               { value: 'hearing', label: t('categoryHearing') || 'Hearing' },
               { value: 'payment', label: t('categoryPayment') || 'Payment' },
-              { value: 'other', label: t('categoryOther') || 'Other' }
+              { value: 'other', label: t('categoryOtherDeadline') || 'Other' }
             ]}
           />
           
@@ -355,7 +355,7 @@ export default function DeadlineTracker() {
               <option value="appeal">{t('categoryAppeal') || 'Appeal'}</option>
               <option value="hearing">{t('categoryHearing') || 'Hearing'}</option>
               <option value="payment">{t('categoryPayment') || 'Payment'}</option>
-              <option value="other">{t('categoryOther') || 'Other'}</option>
+              <option value="other">{t('categoryOtherDeadline') || 'Other'}</option>
             </select>
           </div>
           
