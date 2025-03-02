@@ -5,9 +5,9 @@ import { useLanguage } from '@/lib/LanguageContext';
 import { Select } from '@/components/AccessibleInput';
 import DocumentScanner from '@/components/DocumentScanner';
 import FineCalculator from '@/components/FineCalculator';
-import AppealSuccessPredictor from '@/components/AppealSuccessPredictor';
+import { AppealSuccessPredictor } from '@/components/AppealSuccessPredictor';
 import DeadlineTracker from '@/components/DeadlineTracker';
-import OfficerStatementAnalyzer from '@/components/OfficerStatementAnalyzer';
+import { OfficerStatementAnalyzer } from '@/components/OfficerStatementAnalyzer';
 
 type ToolType = 'scanner' | 'calculator' | 'predictor' | 'deadlines' | 'statementAnalyzer';
 

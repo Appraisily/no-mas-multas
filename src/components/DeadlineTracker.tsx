@@ -147,13 +147,13 @@ export default function DeadlineTracker() {
     } else if (daysRemaining <= 3) {
       return (
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
-          {t('dueInDays', { days: daysRemaining }) || `Due in ${daysRemaining} day${daysRemaining === 1 ? '' : 's'}`}
+          {`${t('dueInDays') || 'Due in'} ${daysRemaining} ${t('days') || `day${daysRemaining === 1 ? '' : 's'}`}`}
         </span>
       );
     } else {
       return (
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-          {t('dueInDays', { days: daysRemaining }) || `Due in ${daysRemaining} day${daysRemaining === 1 ? '' : 's'}`}
+          {`${t('dueInDays') || 'Due in'} ${daysRemaining} ${t('days') || `day${daysRemaining === 1 ? '' : 's'}`}`}
         </span>
       );
     }
