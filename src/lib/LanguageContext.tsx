@@ -287,7 +287,7 @@ const translations: Translations = {
     precedentCase: 'Precedent Case',
     
     // Violation types for legal arguments
-    violationTypeParking: 'Parking Violation',
+    violationTypeParking4: 'Parking Violation',
     violationTypeSpeed: 'Speeding Violation',
     violationTypeRedLight: 'Red Light Violation',
     violationTypeOther: 'Other Violation',
@@ -578,7 +578,7 @@ const translations: Translations = {
     predictionComplete: 'Success prediction complete!',
     
     // Violation types
-    violationTypeParking: 'Parking Violation',
+    violationTypeParking4: 'Parking Violation',
     violationTypeSpeeding: 'Speeding Ticket',
     violationTypeRedLight: 'Red Light Camera Ticket',
     violationTypeNoPermit: 'No Parking Permit',
@@ -1344,3 +1344,4 @@ export function useLanguage() {
   
   return context;
 } 
+

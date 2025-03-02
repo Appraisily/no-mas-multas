@@ -578,7 +578,7 @@ export default function Home() {
         </section>
       </main>
       
-      <FeaturesSection />
+      <FeaturesSection userPlan={UserPlan.FREE} />
       <Footer />
       
       {/* Help Assistant */}
