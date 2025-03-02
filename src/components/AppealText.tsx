@@ -7,6 +7,7 @@ import PDFExport from './PDFExport';
 import AppealQualityAnalyzer from './AppealQualityAnalyzer';
 import AppealTemplates from './AppealTemplates';
 import LegalArgumentGenerator from './LegalArgumentGenerator';
+import RegulationFinder from './RegulationFinder';
 
 interface FineInfo {
   referenceNumber: string;
@@ -15,6 +16,9 @@ interface FineInfo {
   location?: string;
   reason?: string;
   vehicle?: string;
+  fineNumber?: string;
+  officerName?: string;
+  department?: string;
 }
 
 interface AppealTextProps {
@@ -44,7 +48,9 @@ const AppealText: React.FC<AppealTextProps> = ({
   const [hasChanges, setHasChanges] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
   const [showLegalArguments, setShowLegalArguments] = useState(false);
+  const [showRegulations, setShowRegulations] = useState(false);
   const [violationType, setViolationType] = useState('general');
+  const [jurisdiction, setJurisdiction] = useState<string>('');
   
   useEffect(() => {
     setEditableText(initialText);
@@ -82,6 +88,21 @@ const AppealText: React.FC<AppealTextProps> = ({
       setViolationType(typeMap[appealType] || 'general');
     }
   }, [appealType, fineInfo]);
+  
+  useEffect(() => {
+    if (fineInfo?.location) {
+      const location = fineInfo.location.toLowerCase();
+      if (location.includes('california')) {
+        setJurisdiction('california');
+      } else if (location.includes('new york')) {
+        setJurisdiction('new_york');
+      } else if (location.includes('texas')) {
+        setJurisdiction('texas');
+      } else if (location.includes('florida')) {
+        setJurisdiction('florida');
+      }
+    }
+  }, [fineInfo]);
   
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setEditableText(e.target.value);
@@ -215,10 +236,23 @@ const AppealText: React.FC<AppealTextProps> = ({
   };
   
   const handleApplyLegalArgument = (argumentText: string) => {
-    setEditableText(argumentText);
+    const newText = editableText ? `${editableText}\n\n${argumentText}` : argumentText;
+    setEditableText(newText);
     if (onTextChange) {
-      onTextChange(argumentText);
+      onTextChange(newText);
     }
+  };
+  
+  const handleApplyRegulation = (regulation: any) => {
+    const citationText = `\n\nLEGAL REFERENCE:\n${regulation.code} - ${regulation.title}\n"${regulation.description}"\nSource: ${regulation.source}`;
+    
+    const newText = editableText ? `${editableText}${citationText}` : citationText;
+    setEditableText(newText);
+    if (onTextChange) {
+      onTextChange(newText);
+    }
+    
+    setShowRegulations(false);
   };
   
   return (
@@ -444,6 +478,19 @@ const AppealText: React.FC<AppealTextProps> = ({
             {t('legalArgumentsTitle')}
           </button>
           
+          {/* Find Regulations button */}
+          <button
+            onClick={() => setShowRegulations(!showRegulations)}
+            className="flex items-center px-4 py-2 bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300 rounded hover:bg-emerald-200 dark:hover:bg-emerald-800 transition-colors"
+            title={t('showRegulations')}
+            aria-label={t('showRegulations')}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            {t('showRegulations')}
+          </button>
+          
           {/* Keyboard shortcuts help button */}
           <button
             onClick={() => {}} // Will be handled by KeyboardShortcuts component
@@ -491,7 +538,19 @@ const AppealText: React.FC<AppealTextProps> = ({
           <div className="mt-4">
             <LegalArgumentGenerator 
               violationType={violationType}
+              jurisdiction={jurisdiction}
               onSelectArgument={handleApplyLegalArgument}
+            />
+          </div>
+        )}
+
+        {/* Find Regulations */}
+        {showRegulations && (
+          <div className="mt-4">
+            <RegulationFinder
+              violationType={violationType}
+              jurisdiction={jurisdiction}
+              onSelectRegulation={handleApplyRegulation}
             />
           </div>
         )}
