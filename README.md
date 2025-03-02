@@ -26,7 +26,51 @@ A modern web application to help users contest traffic and parking fines by gene
 - **Accessibility Focused**: Designed to be accessible for all users, including those with disabilities.
 - **Fine Calculator**: Estimate potential fines and calculate potential savings from successful appeals.
 - **Legal Deadline Tracker**: Keep track of important dates and deadlines for your traffic ticket appeals, ensuring you never miss a crucial deadline with visual reminders and priority settings.
+- **Document Scanner**: Easily capture traffic tickets using your device's camera with guided alignment and processing.
+- **Appeal Success Predictor**: Analyze your ticket details and predict the likelihood of a successful appeal based on historical data and key case factors.
+- **Officer Statement Analyzer**: Identify potential weaknesses in police officer statements that could strengthen your appeal case.
+- **Unified Tools Interface**: Access all specialized tools in one convenient location through an intuitive UI.
 - **Toast Notification System**: Get real-time feedback on your actions with an accessible notification system.
+
+## Specialized Tools
+
+The application includes several specialized tools to help users manage their traffic tickets more effectively:
+
+### Document Scanner
+- Mobile-friendly document capture using device camera
+- Support for rear camera with alignment guidance
+- Image upload option for existing documents
+- Visual tips for optimal scanning results
+- Document validation and processing
+
+### Fine Calculator
+- Estimate potential fines based on violation type
+- Calculate late fees and maximum penalty caps
+- Determine potential savings from successful appeals
+- View expected value calculations based on success probability
+- Get personalized recommendations based on your specific situation
+
+### Appeal Success Predictor
+- Analyze ticket details against historical appeal data
+- Identify key factors that strengthen or weaken your case
+- Receive probability estimates for successful appeals
+- Get personalized recommendations based on your case strength
+- Visual breakdown of appeal strengths and weaknesses
+
+### Officer Statement Analyzer
+- Analyze police officer statements for procedural issues and vague language
+- Identify missing elements required for the specific violation type
+- Detect issues with officer positioning, visibility conditions, and timing inconsistencies
+- Calculate appeal potential score based on issues found
+- Receive specific advice on how to use each issue in your appeal
+- View highlighted evidence from the statement with confidence ratings
+
+### Legal Deadline Tracker
+- Track important deadlines for your traffic appeals
+- Prioritize deadlines with visual indicators
+- Filter and sort deadlines by category and status
+- Receive reminders for approaching deadlines
+- Store deadline information securely in your browser
 
 ## Tech Stack
 
@@ -79,6 +123,7 @@ A modern web application to help users contest traffic and parking fines by gene
 7. Analyze your appeal for quality and improvement suggestions
 8. Save successful appeals as templates for future use
 9. Track your appeal success rate through the statistics dashboard
+10. Use specialized tools to assess fines, track deadlines, and predict appeal success
 
 ## Key Components
 
@@ -154,6 +199,15 @@ A central hub for managing all aspects of your appeals:
 - Templates management
 - Appeal statistics visualization
 
+### Specialized Tools Hub
+A central location to access all specialized tools:
+- Mobile-friendly document scanner for capturing tickets
+- Fine calculator for estimating costs and potential savings
+- Appeal success predictor for assessing case strength
+- Officer statement analyzer for identifying procedural issues
+- Legal deadline tracker for managing important dates
+- Intuitive navigation between different tools
+
 ## Project Structure
 
 The project follows a clean, modular structure:
@@ -165,6 +219,7 @@ The project follows a clean, modular structure:
     - `appeal/`: Appeal creation pages
     - `dashboard/`: User dashboard pages
     - `deadlines/`: Legal deadline tracker pages
+    - `tools/`: Specialized tools hub page
   - `components/`: Reusable React components
     - `AccessibleInput.tsx`: Accessible form input components
     - `AppealOptionsForm.tsx`: Form for selecting appeal options
@@ -175,6 +230,9 @@ The project follows a clean, modular structure:
     - `KeyboardShortcutsDialog.tsx`: Dialog displaying keyboard shortcuts
     - `FineCalculator.tsx`: Tool to calculate fines and potential savings
     - `DeadlineTracker.tsx`: Component to track legal deadlines for appeals
+    - `DocumentScanner.tsx`: Mobile-friendly ticket scanning tool
+    - `AppealSuccessPredictor.tsx`: Tool to predict appeal success probability
+    - `OfficerStatementAnalyzer.tsx`: Tool to analyze officer statements for weaknesses
   - `lib/`: Utility functions and context providers
     - `ThemeContext.tsx`: Context for theme management
     - `LanguageContext.tsx`: Context for language/localization
@@ -198,6 +256,9 @@ The project follows a clean, modular structure:
 - **Direct Submission**: Submit appeals directly to authorities where possible
 - **Mobile App**: Companion app for on-the-go appeal management
 - **Integration with Local Regulations**: Jurisdiction-specific legal arguments
+- **AI-Powered Hearing Preparation**: Generate questions and responses for traffic court hearings
+- **Geolocation Features**: Location-based traffic laws and jurisdiction information
+- **Collaborative Appeals**: Share appeal drafts with friends or legal professionals for feedback
 
 ## License
 
