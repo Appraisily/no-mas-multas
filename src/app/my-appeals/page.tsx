@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useLanguage } from '@/lib/LanguageContext';
+import AppealSearch, { SearchParams } from '@/components/AppealSearch';
 
 interface Appeal {
   id: string;
@@ -23,11 +24,14 @@ export default function MyAppealsPage() {
   const { t } = useLanguage();
   const router = useRouter();
   const [appeals, setAppeals] = useState<Appeal[]>([]);
+  const [filteredAppeals, setFilteredAppeals] = useState<Appeal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('date');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [searchResults, setSearchResults] = useState<Appeal[]>([]);
+  const [isSearchActive, setIsSearchActive] = useState(false);
 
   useEffect(() => {
     const fetchAppeals = async () => {
@@ -109,6 +113,7 @@ export default function MyAppealsPage() {
         ];
         
         setAppeals(mockAppeals);
+        setFilteredAppeals(mockAppeals); // Initialize filteredAppeals
       } catch (err) {
         console.error("Error fetching appeals:", err);
         setError(t('errorFetchingAppeals') || "Failed to fetch appeals");
@@ -120,13 +125,96 @@ export default function MyAppealsPage() {
     fetchAppeals();
   }, [t]);
 
-  const filteredAppeals = appeals.filter(appeal => {
-    if (filter === 'all') return true;
-    if (filter === 'active') return ['submitted', 'received', 'under_review', 'decision_pending'].includes(appeal.status);
-    if (filter === 'completed') return appeal.status === 'completed';
-    if (filter === 'rejected') return appeal.status === 'rejected';
-    return true;
-  });
+  const handleSearch = (searchParams: SearchParams) => {
+    if (!searchParams.query && 
+        !searchParams.dateFrom && 
+        !searchParams.dateTo && 
+        (!searchParams.status || searchParams.status.length === 0) && 
+        (!searchParams.types || searchParams.types.length === 0) &&
+        !searchParams.amountMin &&
+        !searchParams.amountMax) {
+      setIsSearchActive(false);
+      return;
+    }
+
+    setIsSearchActive(true);
+    
+    const results = appeals.filter(appeal => {
+      // Text search
+      if (searchParams.query && !Object.values(appeal).some(value => 
+        typeof value === 'string' && 
+        value.toLowerCase().includes(searchParams.query.toLowerCase())
+      ) && !Object.values(appeal.fineInfo).some(value => 
+        typeof value === 'string' && 
+        value.toLowerCase().includes(searchParams.query.toLowerCase())
+      )) {
+        return false;
+      }
+      
+      // Date filtering
+      if (searchParams.dateFrom) {
+        const fromDate = new Date(searchParams.dateFrom);
+        const appealDate = new Date(appeal.submittedDate);
+        if (appealDate < fromDate) return false;
+      }
+      
+      if (searchParams.dateTo) {
+        const toDate = new Date(searchParams.dateTo);
+        toDate.setHours(23, 59, 59); // End of day
+        const appealDate = new Date(appeal.submittedDate);
+        if (appealDate > toDate) return false;
+      }
+      
+      // Status filtering
+      if (searchParams.status && searchParams.status.length > 0) {
+        if (!searchParams.status.includes(appeal.status)) return false;
+      }
+      
+      // Type filtering
+      if (searchParams.types && searchParams.types.length > 0) {
+        if (!searchParams.types.includes(appeal.type)) return false;
+      }
+      
+      // Amount filtering
+      if (searchParams.amountMin && appeal.fineInfo.amount) {
+        const amount = parseFloat(appeal.fineInfo.amount.replace(/[^0-9.-]+/g, ''));
+        if (amount < parseFloat(searchParams.amountMin)) return false;
+      }
+      
+      if (searchParams.amountMax && appeal.fineInfo.amount) {
+        const amount = parseFloat(appeal.fineInfo.amount.replace(/[^0-9.-]+/g, ''));
+        if (amount > parseFloat(searchParams.amountMax)) return false;
+      }
+      
+      return true;
+    });
+    
+    setSearchResults(results);
+  };
+  
+  useEffect(() => {
+    if (isSearchActive) {
+      // When search is active, use search results as the base
+      const filtered = searchResults.filter(appeal => {
+        if (filter === 'all') return true;
+        if (filter === 'active') return ['submitted', 'received', 'under_review', 'decision_pending'].includes(appeal.status);
+        if (filter === 'completed') return appeal.status === 'completed';
+        if (filter === 'rejected') return appeal.status === 'rejected';
+        return true;
+      });
+      setFilteredAppeals(filtered);
+    } else {
+      // When no search, use standard filtering
+      const filtered = appeals.filter(appeal => {
+        if (filter === 'all') return true;
+        if (filter === 'active') return ['submitted', 'received', 'under_review', 'decision_pending'].includes(appeal.status);
+        if (filter === 'completed') return appeal.status === 'completed';
+        if (filter === 'rejected') return appeal.status === 'rejected';
+        return true;
+      });
+      setFilteredAppeals(filtered);
+    }
+  }, [filter, appeals, searchResults, isSearchActive]);
 
   const sortedAppeals = [...filteredAppeals].sort((a, b) => {
     if (sortBy === 'date') {
@@ -247,6 +335,8 @@ export default function MyAppealsPage() {
           </button>
         </div>
         
+        <AppealSearch onSearch={handleSearch} />
+        
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
           <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
             <div className="flex flex-wrap gap-2">
@@ -324,7 +414,30 @@ export default function MyAppealsPage() {
             </div>
           </div>
           
-          {sortedAppeals.length === 0 ? (
+          {isSearchActive && searchResults.length === 0 ? (
+            <div className="text-center py-12">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 16l2.879-2.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <h3 className="mt-2 text-lg font-medium text-gray-900 dark:text-gray-100">
+                {t('noSearchResults') || 'No matching appeals found'}
+              </h3>
+              <p className="mt-1 text-gray-500 dark:text-gray-400">
+                {t('tryDifferentSearch') || 'Try different search terms or filters'}
+              </p>
+              <button 
+                onClick={() => {
+                  setIsSearchActive(false);
+                }}
+                className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors inline-flex items-center"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                {t('resetSearch') || 'Reset Search'}
+              </button>
+            </div>
+          ) : sortedAppeals.length === 0 ? (
             <div className="text-center py-12">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />

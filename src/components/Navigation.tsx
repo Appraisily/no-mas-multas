@@ -71,6 +71,7 @@ export default function Navigation() {
     { path: '/dashboard', label: t('dashboard') || 'Dashboard' },
     { path: '/create-appeal', label: t('createAppeal') || 'Create Appeal' },
     { path: '/my-appeals', label: t('myAppeals') || 'My Appeals' },
+    { path: '/statistics', label: t('statistics') || 'Statistics' },
     { path: '/resources', label: t('resources') || 'Resources' },
   ];
   
