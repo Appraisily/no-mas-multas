@@ -7,34 +7,34 @@ export const themeConfig = {
   // Color palette configuration
   colors: {
     primary: {
-      DEFAULT: '#0f172a', // Deep blue for primary elements
-      foreground: '#f8fafc',
+      DEFAULT: '#1A1A1A', // User-specified black
+      foreground: '#FFFFFF',
     },
     accent: {
-      DEFAULT: '#0369a1', // Strategic blue accent for important actions
-      foreground: '#f8fafc',
+      DEFAULT: '#9BB6CF', // Armadillo Blue
+      foreground: '#FFFFFF',
     },
     secondary: {
-      DEFAULT: '#334155', // Slate-700 for secondary elements
-      foreground: '#f8fafc',
+      DEFAULT: '#527699', // Darker Blue
+      foreground: '#FFFFFF',
     },
     destructive: {
-      DEFAULT: '#991b1b', // Subdued red for cautionary actions
+      DEFAULT: '#991b1b', // Keeping this red for cautionary actions
       foreground: '#fef2f2',
     },
     muted: {
-      DEFAULT: '#f1f5f9', // Slate-100 for muted backgrounds
-      foreground: '#64748b', // Slate-500 for muted text
+      DEFAULT: '#F5F5F5', // Gray-100
+      foreground: '#6E6E6E', // Gray-600
     },
     card: {
-      DEFAULT: 'white',
-      foreground: '#0f172a', // slate-900
+      DEFAULT: '#FFFFFF',
+      foreground: '#1A1A1A',
     },
     popover: {
-      DEFAULT: 'white',
-      foreground: '#0f172a', // slate-900
+      DEFAULT: '#FFFFFF',
+      foreground: '#1A1A1A',
     },
-    border: '#e2e8f0', // slate-200
+    border: '#D1D1D1', // Gray-300
   },
   
   // Typography configuration
@@ -54,8 +54,8 @@ export const themeConfig = {
     },
     // Crisper borders with slightly increased contrast
     borders: {
-      DEFAULT: '1px solid #e2e8f0', // slate-200
-      focus: '2px solid #3b82f6', // blue-500
+      DEFAULT: '1px solid #D1D1D1', // Gray-300
+      focus: '2px solid #9BB6CF', // Armadillo Blue
       error: '1px solid #ef4444', // red-500
     },
   },
@@ -81,17 +81,17 @@ export const semanticColors = {
   // Element-specific colors
   element: {
     card: {
-      light: 'white',
-      dark: '#0f172a', // slate-950
+      light: '#FFFFFF',
+      dark: '#1A1A1A',
     },
     input: {
       border: {
-        light: '#e2e8f0', // slate-200
-        dark: '#334155',  // slate-700
+        light: '#D1D1D1', // Gray-300
+        dark: '#6E6E6E',  // Gray-600
       },
       bg: {
-        light: 'white',
-        dark: '#0f172a',  // slate-950
+        light: '#FFFFFF',
+        dark: '#1A1A1A',
       }
     },
   }

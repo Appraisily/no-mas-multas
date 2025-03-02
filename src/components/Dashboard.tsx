@@ -4,6 +4,20 @@ import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/lib/LanguageContext';
 import Link from 'next/link';
 import AppealStats from './AppealStats';
+import { 
+  Card, 
+  CardHeader, 
+  CardTitle, 
+  CardDescription, 
+  CardContent 
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { OfficerStatementAnalyzer } from '@/components/OfficerStatementAnalyzer';
+import { AppealSuccessPredictor } from '@/components/AppealSuccessPredictor';
+import { ThemeSwitch } from '@/components/ThemeSwitch';
+import { ArmadilloWithMessage } from '@/components/Armadillo';
+import { BookOpen, FileText, PenTool, ChevronRight, BarChart, Zap, ThumbsUp } from 'lucide-react';
 
 interface AppealSummary {
   id: string;
@@ -21,6 +35,16 @@ export default function Dashboard() {
   const [recentAppeals, setRecentAppeals] = useState<AppealSummary[]>([]);
   const [firstName, setFirstName] = useState('User');
   const [appealsCount, setAppealsCount] = useState({ total: 0, pending: 0, completed: 0, rejected: 0 });
+  const [activeAppeals, setActiveAppeals] = useState<AppealSummary[]>([]);
+  const [completedAppeals, setCompletedAppeals] = useState<AppealSummary[]>([]);
+  const [motivationalMessages] = useState([
+    "Fight your ticket with confidence!",
+    "We've got your back against traffic violations.",
+    "Justice shouldn't come with a price tag.",
+    "Turn that ticket into a victory!",
+    "Your legal defender against unfair tickets."
+  ]);
+  const [currentMessage, setCurrentMessage] = useState("");
   
   // Mock data loading
   useEffect(() => {
@@ -85,11 +109,15 @@ export default function Dashboard() {
         }
       ]);
       
+      // Randomly select a motivational message on load
+      const randomIndex = Math.floor(Math.random() * motivationalMessages.length);
+      setCurrentMessage(motivationalMessages[randomIndex]);
+      
       setIsLoading(false);
     };
     
     loadDashboardData();
-  }, []);
+  }, [motivationalMessages]);
   
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -147,336 +175,174 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-all">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-          {t('dashboardTitle')}
-        </h2>
-        
-        <div className="flex space-x-4">
-          <button
-            onClick={() => window.location.href = '/appeal/new'}
-            className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors flex items-center"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-            </svg>
-            {t('createNewAppeal')}
-          </button>
-        </div>
-      </div>
-      
-      <div className="mb-6">
-        <div className="flex border-b border-gray-200 dark:border-gray-700">
-          <button
-            onClick={() => setActiveTab('overview')}
-            className={`py-2 px-4 font-medium text-sm ${
-              activeTab === 'overview'
-                ? 'border-b-2 border-purple-500 text-purple-600 dark:text-purple-400'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-            }`}
-          >
-            {t('overview')}
-          </button>
-          <button
-            onClick={() => setActiveTab('appeals')}
-            className={`py-2 px-4 font-medium text-sm ${
-              activeTab === 'appeals'
-                ? 'border-b-2 border-purple-500 text-purple-600 dark:text-purple-400'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-            }`}
-          >
-            {t('myAppeals')}
-          </button>
-          <button
-            onClick={() => setActiveTab('templates')}
-            className={`py-2 px-4 font-medium text-sm ${
-              activeTab === 'templates'
-                ? 'border-b-2 border-purple-500 text-purple-600 dark:text-purple-400'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-            }`}
-          >
-            {t('templatesLibrary')}
-          </button>
-          <button
-            onClick={() => setActiveTab('stats')}
-            className={`py-2 px-4 font-medium text-sm ${
-              activeTab === 'stats'
-                ? 'border-b-2 border-purple-500 text-purple-600 dark:text-purple-400'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-            }`}
-          >
-            {t('appealStatsTitle')}
-          </button>
-        </div>
-      </div>
-      
-      {/* Overview Tab */}
-      {activeTab === 'overview' && (
-        <div className="animate-fade-in">
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
-            {t('welcomeBack')}, {firstName}
-          </h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white dark:bg-gray-750 rounded-lg shadow-sm p-4 border border-gray-200 dark:border-gray-700">
-              <div className="flex items-center">
-                <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </div>
-                <div className="ml-4">
-                  <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    {t('totalAppeals')}
-                  </h4>
-                  <p className="text-2xl font-bold text-gray-800 dark:text-white">
-                    {appealsCount.total}
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white dark:bg-gray-750 rounded-lg shadow-sm p-4 border border-gray-200 dark:border-gray-700">
-              <div className="flex items-center">
-                <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div className="ml-4">
-                  <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    {t('pendingAppeals')}
-                  </h4>
-                  <p className="text-2xl font-bold text-gray-800 dark:text-white">
-                    {appealsCount.pending}
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white dark:bg-gray-750 rounded-lg shadow-sm p-4 border border-gray-200 dark:border-gray-700">
-              <div className="flex items-center">
-                <div className="p-3 bg-green-100 dark:bg-green-900 rounded-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div className="ml-4">
-                  <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    {t('completedAppeals')}
-                  </h4>
-                  <p className="text-2xl font-bold text-gray-800 dark:text-white">
-                    {appealsCount.completed}
-                  </p>
-                </div>
-              </div>
-            </div>
+    <div className="min-h-screen bg-muted/30 dark:bg-slate-950 pb-8">
+      {/* Header */}
+      <header className="sticky top-0 z-10 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm">
+        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <h1 className="text-xl font-bold text-primary dark:text-white">NoMasMultas</h1>
+            <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20">BETA</Badge>
           </div>
-          
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-              {t('recentAppeals')}
-            </h3>
-            <Link
-              href="/appeals"
-              className="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300"
-            >
-              {t('viewAll')}
-            </Link>
-          </div>
-          
-          {recentAppeals.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
-                <thead className="bg-gray-50 dark:bg-gray-700">
-                  <tr>
-                    <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      {t('appealTitle')}
-                    </th>
-                    <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      {t('referenceNumber')}
-                    </th>
-                    <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      {t('type')}
-                    </th>
-                    <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      {t('date')}
-                    </th>
-                    <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      {t('status')}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {recentAppeals.map((appeal) => (
-                    <tr key={appeal.id} className="hover:bg-gray-50 dark:hover:bg-gray-750">
-                      <td className="py-4 px-4 text-sm text-gray-900 dark:text-gray-100">
-                        <Link href={`/appeal/${appeal.id}`} className="text-purple-600 dark:text-purple-400 hover:underline">
-                          {appeal.title}
-                        </Link>
-                      </td>
-                      <td className="py-4 px-4 text-sm text-gray-500 dark:text-gray-400">
-                        {appeal.referenceNumber}
-                      </td>
-                      <td className="py-4 px-4 text-sm text-gray-500 dark:text-gray-400">
-                        {getTypeText(appeal.type)}
-                      </td>
-                      <td className="py-4 px-4 text-sm text-gray-500 dark:text-gray-400">
-                        {new Date(appeal.date).toLocaleDateString()}
-                      </td>
-                      <td className="py-4 px-4 text-sm">
-                        <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(appeal.status)}`}>
-                          {getStatusText(appeal.status)}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-              {t('noRecentActivity')}
-            </div>
-          )}
+          <ThemeSwitch />
         </div>
-      )}
-      
-      {/* Appeals Tab */}
-      {activeTab === 'appeals' && (
-        <div className="animate-fade-in">
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
-            {t('myAppeals')}
-          </h3>
-          
-          <div className="mb-6 flex space-x-2">
-            <button className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors">
-              {t('allAppeals')}
-            </button>
-            <button className="px-4 py-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors border border-gray-300 dark:border-gray-600">
-              {t('pendingAppeals')}
-            </button>
-            <button className="px-4 py-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors border border-gray-300 dark:border-gray-600">
-              {t('completedAppeals')}
-            </button>
-          </div>
-          
-          {recentAppeals.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
-                <thead className="bg-gray-50 dark:bg-gray-700">
-                  <tr>
-                    <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      {t('appealTitle')}
-                    </th>
-                    <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      {t('referenceNumber')}
-                    </th>
-                    <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      {t('type')}
-                    </th>
-                    <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      {t('date')}
-                    </th>
-                    <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      {t('status')}
-                    </th>
-                    <th className="py-3 px-4 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      {t('actions')}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {recentAppeals.map((appeal) => (
-                    <tr key={appeal.id} className="hover:bg-gray-50 dark:hover:bg-gray-750">
-                      <td className="py-4 px-4 text-sm text-gray-900 dark:text-gray-100">
-                        <Link href={`/appeal/${appeal.id}`} className="text-purple-600 dark:text-purple-400 hover:underline">
-                          {appeal.title}
-                        </Link>
-                      </td>
-                      <td className="py-4 px-4 text-sm text-gray-500 dark:text-gray-400">
-                        {appeal.referenceNumber}
-                      </td>
-                      <td className="py-4 px-4 text-sm text-gray-500 dark:text-gray-400">
-                        {getTypeText(appeal.type)}
-                      </td>
-                      <td className="py-4 px-4 text-sm text-gray-500 dark:text-gray-400">
-                        {new Date(appeal.date).toLocaleDateString()}
-                      </td>
-                      <td className="py-4 px-4 text-sm">
-                        <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(appeal.status)}`}>
-                          {getStatusText(appeal.status)}
-                        </span>
-                      </td>
-                      <td className="py-4 px-4 text-sm text-right">
-                        <button className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 mr-3">
-                          {t('edit')}
-                        </button>
-                        <button className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
-                          {t('delete')}
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="text-center py-12 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No appeals</h3>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Get started by creating a new appeal
-              </p>
-              <div className="mt-6">
-                <button 
-                  onClick={() => window.location.href = '/appeal/new'}
-                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="-ml-1 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-                  </svg>
-                  {t('createNewAppeal')}
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-      
-      {/* Templates Tab */}
-      {activeTab === 'templates' && (
-        <div className="animate-fade-in">
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
-            {t('templatesLibrary')}
-          </h3>
-          
-          <div className="text-center py-12 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
-            </svg>
-            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{t('templatesLibrary')}</h3>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              {t('templatesIntro')}
+      </header>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-8">
+        {/* Welcome Section with Armadillo */}
+        <div className="mb-10 flex flex-col lg:flex-row items-center justify-between gap-6 bg-gradient-to-br from-accent/5 to-secondary/5 rounded-xl p-6 border border-accent/10">
+          <div className="lg:max-w-xl">
+            <h1 className="text-3xl font-bold text-primary dark:text-white mb-3">
+              Welcome to NoMasMultas
+            </h1>
+            <p className="text-slate-600 dark:text-slate-300 mb-4">
+              Your AI-powered assistant for fighting traffic tickets and violations. 
+              Our tools help analyze officer statements, predict appeal success, and 
+              generate strong legal arguments.
             </p>
-            <div className="mt-6">
-              <button className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
-                {t('browseTemplates')}
-              </button>
+            <div className="flex flex-wrap gap-3">
+              <Button className="bg-accent hover:bg-secondary text-white">
+                Start New Appeal
+              </Button>
+              <Button variant="outline" className="border-accent text-accent hover:bg-accent/10">
+                View Tutorial
+              </Button>
             </div>
           </div>
+          <div className="lg:max-w-sm">
+            <ArmadilloWithMessage
+              message={currentMessage}
+              size="lg"
+              withShadow
+            />
+          </div>
         </div>
-      )}
-      
-      {/* Stats Tab */}
-      {activeTab === 'stats' && (
-        <div className="animate-fade-in">
-          <AppealStats />
+
+        {/* Tools Grid */}
+        <h2 className="text-xl font-semibold text-primary dark:text-white mb-4">Your Appeal Tools</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+          {/* Appeal Predictor Card */}
+          <div className="lg:row-span-2">
+            <AppealSuccessPredictor />
+          </div>
+          
+          {/* Officer Statement Card */}
+          <div className="lg:row-span-2">
+            <OfficerStatementAnalyzer />
+          </div>
         </div>
-      )}
+
+        {/* Additional Resources */}
+        <h2 className="text-xl font-semibold text-primary dark:text-white mb-4">Additional Resources</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          {/* Legal Reference Library */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-start justify-between">
+                <div>
+                  <CardTitle className="text-lg">Legal Reference Library</CardTitle>
+                  <CardDescription>Access legal templates and precedents</CardDescription>
+                </div>
+                <div className="h-10 w-10 rounded-full bg-accent/10 flex items-center justify-center text-accent">
+                  <BookOpen className="h-5 w-5" />
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" className="w-full mt-2 justify-between">
+                Browse Library <ChevronRight className="h-4 w-4" />
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Evidence Collection */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-start justify-between">
+                <div>
+                  <CardTitle className="text-lg">Evidence Collection</CardTitle>
+                  <CardDescription>Tools for gathering and organizing evidence</CardDescription>
+                </div>
+                <div className="h-10 w-10 rounded-full bg-accent/10 flex items-center justify-center text-accent">
+                  <BarChart className="h-5 w-5" />
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" className="w-full mt-2 justify-between">
+                Collect Evidence <ChevronRight className="h-4 w-4" />
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Appeal Letter Generator */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-start justify-between">
+                <div>
+                  <CardTitle className="text-lg">Appeal Letter Generator</CardTitle>
+                  <CardDescription>Generate professional appeal documents</CardDescription>
+                </div>
+                <div className="h-10 w-10 rounded-full bg-accent/10 flex items-center justify-center text-accent">
+                  <PenTool className="h-5 w-5" />
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" className="w-full mt-2 justify-between">
+                Create Letter <ChevronRight className="h-4 w-4" />
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+        
+        {/* Feature Highlights */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="flex flex-col items-center text-center p-4">
+            <div className="h-12 w-12 rounded-full bg-accent/10 flex items-center justify-center text-accent mb-4">
+              <Zap className="h-6 w-6" />
+            </div>
+            <h3 className="font-medium text-lg mb-2">Advanced AI Analysis</h3>
+            <p className="text-slate-600 dark:text-slate-400">
+              Our AI can spot legal weaknesses in officer statements that humans might miss.
+            </p>
+          </div>
+          <div className="flex flex-col items-center text-center p-4">
+            <div className="h-12 w-12 rounded-full bg-accent/10 flex items-center justify-center text-accent mb-4">
+              <FileText className="h-6 w-6" />
+            </div>
+            <h3 className="font-medium text-lg mb-2">Legal Document Templates</h3>
+            <p className="text-slate-600 dark:text-slate-400">
+              Professional templates customized to your specific situation and jurisdiction.
+            </p>
+          </div>
+          <div className="flex flex-col items-center text-center p-4">
+            <div className="h-12 w-12 rounded-full bg-accent/10 flex items-center justify-center text-accent mb-4">
+              <ThumbsUp className="h-6 w-6" />
+            </div>
+            <h3 className="font-medium text-lg mb-2">Success-Oriented Approach</h3>
+            <p className="text-slate-600 dark:text-slate-400">
+              Our tools are designed to maximize your chances of a successful appeal.
+            </p>
+          </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-6">
+        <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+          <div className="mb-4 md:mb-0">
+            <p className="text-slate-600 dark:text-slate-400">
+              © {new Date().getFullYear()} NoMasMultas. All rights reserved.
+            </p>
+          </div>
+          <div className="flex space-x-6">
+            <a href="#" className="text-accent hover:text-secondary">Terms</a>
+            <a href="#" className="text-accent hover:text-secondary">Privacy</a>
+            <a href="#" className="text-accent hover:text-secondary">Contact</a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 } 
