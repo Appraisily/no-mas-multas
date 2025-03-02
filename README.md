@@ -16,6 +16,8 @@ A modern web application to help users contest traffic and parking fines by gene
 - **Multilingual Support**: Available in English and Spanish
 - **Dark Mode Support**: Fully customizable theme system with light, dark, and system preference options
 - **Export & Print Options**: Save appeals as text, PDF, or print directly
+- **Enhanced Accessibility**: Keyboard shortcuts, accessible form components, and a floating help system
+- **Floating Help Button**: Quick access to guides, tutorials, and frequently asked questions
 
 ## Tech Stack
 
@@ -80,6 +82,23 @@ A comprehensive theme management system with multiple options:
 - Mobile-optimized interface for theme switching
 - Accessible design with proper color contrast in both themes
 
+### Enhanced Accessibility
+Multiple features to improve application accessibility:
+- Keyboard shortcuts for quick navigation and common actions
+- Accessible form components with proper labeling and ARIA attributes
+- Floating help button for quick access to assistance
+- Screen reader friendly UI components with semantic HTML
+- High contrast mode support for visually impaired users
+- Focus management for keyboard navigation
+
+### Floating Help System
+A context-aware help system that provides:
+- Quick access to guides and tutorials
+- Demo mode for new users
+- Frequently asked questions
+- Responsive design for all device sizes
+- Keyboard accessible interface
+
 ### Legal Argument Generator
 Access a database of legally sound arguments tailored to specific violation types. Each argument includes:
 - Legal code references
@@ -126,19 +145,23 @@ no-mas-multas/
 │   │   ├── api/      # API routes
 │   │   └── page.tsx  # Main page component
 │   ├── components/   # React components
-│   │   ├── AppealQualityAnalyzer.tsx  # Appeal quality analysis
-│   │   ├── AppealStats.tsx            # Appeal statistics
-│   │   ├── AppealTemplates.tsx        # Templates management
-│   │   ├── AppealText.tsx             # Appeal text editor
-│   │   ├── Dashboard.tsx              # User dashboard
-│   │   ├── LegalArgumentGenerator.tsx # Legal arguments
-│   │   ├── LoadingSpinner.tsx         # Loading indicators
-│   │   ├── Navigation.tsx             # Site navigation
-│   │   └── ThemeSwitcher.tsx          # Theme toggle component
+│   │   ├── AccessibleInput.tsx         # Accessible form components
+│   │   ├── AppealQualityAnalyzer.tsx   # Appeal quality analysis
+│   │   ├── AppealStats.tsx             # Appeal statistics
+│   │   ├── AppealTemplates.tsx         # Templates management
+│   │   ├── AppealText.tsx              # Appeal text editor
+│   │   ├── Dashboard.tsx               # User dashboard
+│   │   ├── FloatingHelpButton.tsx      # Floating help system
+│   │   ├── KeyboardShortcutsDialog.tsx # Keyboard shortcuts help
+│   │   ├── LegalArgumentGenerator.tsx  # Legal arguments
+│   │   ├── LoadingSpinner.tsx          # Loading indicators
+│   │   ├── Navigation.tsx              # Site navigation
+│   │   └── ThemeSwitcher.tsx           # Theme toggle component
 │   ├── lib/          # Utility functions and contexts
-│   │   ├── cookieHelper.ts            # Cookie management
-│   │   ├── LanguageContext.tsx        # Multilingual support
-│   │   └── ThemeContext.tsx           # Theme management
+│   │   ├── cookieHelper.ts             # Cookie management
+│   │   ├── LanguageContext.tsx         # Multilingual support
+│   │   ├── ThemeContext.tsx            # Theme management
+│   │   └── useKeyboardShortcuts.tsx    # Keyboard shortcuts hooks
 │   └── types.ts      # TypeScript types
 ├── .env.local.example # Environment variables example
 └── package.json     # Project dependencies

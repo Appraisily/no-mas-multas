@@ -162,15 +162,20 @@ const translations: Translations = {
     
     // Keyboard shortcuts
     keyboardShortcuts: 'Keyboard Shortcuts',
-    shortcutHelp: 'Show Shortcuts',
-    shortcutUpload: 'Upload Document',
-    shortcutAnalyze: 'Analyze Document',
-    shortcutGenerate: 'Generate Appeal',
-    shortcutExport: 'Export Appeal',
-    shortcutPrint: 'Print Appeal',
-    shortcutCopy: 'Copy to Clipboard',
-    shortcutClose: 'Close Modal',
-    shortcutTip: 'Tip: Press Ctrl+? anytime to show this dialog',
+    globalShortcuts: 'Global Shortcuts',
+    editorShortcuts: 'Editor Shortcuts',
+    dashboardShortcuts: 'Dashboard Shortcuts',
+    gotIt: 'Got it!',
+    close: 'Close',
+    'Go to Home page': 'Go to Home page',
+    'Go to Dashboard': 'Go to Dashboard',
+    'Create a new appeal': 'Create a new appeal',
+    'View my appeals': 'View my appeals',
+    'Show keyboard shortcuts help': 'Show keyboard shortcuts help',
+    'Focus search': 'Focus search',
+    'Close dialogs or panels': 'Close dialogs or panels',
+    'Toggle language': 'Toggle language',
+    'Toggle theme (dark/light)': 'Toggle theme (dark/light)',
     
     // PDF export
     downloadPdf: 'Download as PDF',
@@ -454,6 +459,13 @@ const translations: Translations = {
     statistics: 'Statistics',
     resources: 'Resources',
     demo: 'Demo',
+    
+    // Help FAB translations
+    getHelp: 'Get Help',
+    viewGuide: 'View Guide',
+    watchTutorial: 'Watch Tutorial',
+    faq: 'Frequently Asked Questions',
+    startDemo: 'Try Demo',
   },
   es: {
     title: 'No Más Multas',
@@ -595,15 +607,20 @@ const translations: Translations = {
     
     // Keyboard shortcuts
     keyboardShortcuts: 'Atajos de Teclado',
-    shortcutHelp: 'Mostrar Atajos',
-    shortcutUpload: 'Subir Documento',
-    shortcutAnalyze: 'Analizar Documento',
-    shortcutGenerate: 'Generar Recurso',
-    shortcutExport: 'Exportar Recurso',
-    shortcutPrint: 'Imprimir Recurso',
-    shortcutCopy: 'Copiar al Portapapeles',
-    shortcutClose: 'Cerrar Ventana',
-    shortcutTip: 'Consejo: Pulsa Ctrl+? en cualquier momento para mostrar este diálogo',
+    globalShortcuts: 'Atajos Globales',
+    editorShortcuts: 'Atajos del Editor',
+    dashboardShortcuts: 'Atajos del Tablero',
+    gotIt: '¡Entendido!',
+    close: 'Cerrar',
+    'Go to Home page': 'Ir a la página principal',
+    'Go to Dashboard': 'Ir al Tablero',
+    'Create a new appeal': 'Crear un nuevo recurso',
+    'View my appeals': 'Ver mis recursos',
+    'Show keyboard shortcuts help': 'Mostrar ayuda de atajos de teclado',
+    'Focus search': 'Enfocar búsqueda',
+    'Close dialogs or panels': 'Cerrar diálogos o paneles',
+    'Toggle language': 'Cambiar idioma',
+    'Toggle theme (dark/light)': 'Cambiar tema (claro/oscuro)',
     
     // PDF export
     downloadPdf: 'Descargar como PDF',
@@ -887,6 +904,13 @@ const translations: Translations = {
     statistics: 'Estadísticas',
     resources: 'Recursos',
     demo: 'Demo',
+    
+    // Help FAB translations
+    getHelp: 'Obtener Ayuda',
+    viewGuide: 'Ver Guía',
+    watchTutorial: 'Ver Tutorial',
+    faq: 'Preguntas Frecuentes',
+    startDemo: 'Probar Demo',
   },
 };
 

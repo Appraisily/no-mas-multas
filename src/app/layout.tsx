@@ -4,6 +4,8 @@ import "./globals.css";
 import { LanguageProvider } from "@/lib/LanguageContext";
 import { ThemeProvider } from "@/lib/ThemeContext";
 import Navigation from "@/components/Navigation";
+import FloatingHelpButton from "@/components/FloatingHelpButton";
+import { ToastProvider } from "@/components/ToastNotification";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,10 +27,13 @@ export default function RootLayout({
       <body className={`${inter.className} min-h-screen bg-gray-50 dark:bg-gray-900 dark:text-white transition-colors duration-200`}>
         <LanguageProvider>
           <ThemeProvider>
-            <Navigation />
-            <main className="pt-16">
-              {children}
-            </main>
+            <ToastProvider>
+              <Navigation />
+              <main className="pt-16">
+                {children}
+              </main>
+              <FloatingHelpButton />
+            </ToastProvider>
           </ThemeProvider>
         </LanguageProvider>
       </body>
