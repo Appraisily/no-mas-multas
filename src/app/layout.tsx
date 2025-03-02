@@ -4,6 +4,7 @@ import "./globals.css";
 import { LanguageProvider } from "@/lib/LanguageContext";
 import { ThemeProvider } from "@/lib/ThemeContext";
 import Navigation from "@/components/Navigation";
+import MobileNav from "@/components/MobileNav";
 import FloatingHelpButton from "@/components/FloatingHelpButton";
 import { ToastProvider } from "@/components/ToastNotification";
 
@@ -33,6 +34,7 @@ export default function RootLayout({
                 {children}
               </main>
               <FloatingHelpButton />
+              <MobileNav />
             </ToastProvider>
           </ThemeProvider>
         </LanguageProvider>

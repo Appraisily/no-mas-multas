@@ -4,12 +4,17 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/lib/LanguageContext';
 import { useToast } from './ToastNotification';
+import { useBreakpointMatch } from '@/lib/responsive';
 
 export default function FloatingHelpButton() {
   const { t } = useLanguage();
   const { showToast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  
+  // Get current breakpoint to adjust positioning
+  const isDesktop = useBreakpointMatch('lg');
+  const isMobile = !isDesktop;
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -96,10 +101,19 @@ export default function FloatingHelpButton() {
     showToast(option.toastMessage, option.toastType);
   };
 
+  // Adjust positioning based on screen size
+  const buttonPosition = isMobile 
+    ? "fixed bottom-20 right-4 z-40" // Above the mobile navigation
+    : "fixed bottom-6 left-6 z-40";  // Original position on desktop
+    
+  const menuPosition = isMobile
+    ? "absolute bottom-14 right-0" // Open upwards on mobile
+    : "absolute bottom-16 left-0"; // Open upwards on desktop
+
   return (
     <div 
       ref={menuRef}
-      className="fixed bottom-6 left-6 z-40"
+      className={buttonPosition}
     >
       <button
         onClick={toggleMenu}
@@ -122,7 +136,7 @@ export default function FloatingHelpButton() {
       {isOpen && (
         <div 
           id="help-menu"
-          className="absolute bottom-16 left-0 bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transition-all duration-200 animate-fade-in-up"
+          className={`${menuPosition} bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden transition-all duration-200 animate-fade-in-up w-64`}
         >
           <div className="py-2">
             {helpOptions.map((option, index) => (

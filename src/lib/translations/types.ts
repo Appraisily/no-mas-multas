@@ -17,7 +17,5 @@ export interface LanguageProviderProps {
 
 // Define the structure for translations
 export type Translations = {
-  [key: string]: {
-    [key: string]: string;
-  };
+  [key: string]: string;
 }; 

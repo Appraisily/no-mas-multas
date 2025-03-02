@@ -141,3 +141,128 @@ body {
 .badge-purple {
   @apply bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200;
 }
+
+/* Responsive utilities */
+@layer utilities {
+  /* Hide elements based on screen size */
+  .hide-on-mobile {
+    @apply hidden sm:block;
+  }
+  
+  .hide-on-desktop {
+    @apply block sm:hidden;
+  }
+  
+  /* Text size adjustments for mobile */
+  .mobile-text-xs {
+    @apply text-xs sm:text-sm;
+  }
+  
+  .mobile-text-sm {
+    @apply text-sm sm:text-base;
+  }
+  
+  .mobile-text-base {
+    @apply text-base sm:text-lg;
+  }
+  
+  .mobile-text-lg {
+    @apply text-lg sm:text-xl;
+  }
+  
+  .mobile-text-xl {
+    @apply text-xl sm:text-2xl;
+  }
+  
+  /* Responsive padding */
+  .pad-responsive {
+    @apply px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8;
+  }
+  
+  .pad-x-responsive {
+    @apply px-4 sm:px-6 lg:px-8;
+  }
+  
+  .pad-y-responsive {
+    @apply py-4 sm:py-6 lg:py-8;
+  }
+  
+  /* Responsive margins */
+  .margin-responsive {
+    @apply m-4 sm:m-6 lg:m-8;
+  }
+  
+  .margin-x-responsive {
+    @apply mx-4 sm:mx-6 lg:mx-8;
+  }
+  
+  .margin-y-responsive {
+    @apply my-4 sm:my-6 lg:my-8;
+  }
+  
+  /* Responsive gaps */
+  .gap-responsive {
+    @apply gap-4 sm:gap-6 lg:gap-8;
+  }
+  
+  /* Responsive container widths */
+  .container-responsive {
+    @apply w-full px-4 sm:px-6 md:max-w-3xl lg:max-w-4xl xl:max-w-6xl mx-auto;
+  }
+  
+  /* Responsive flex direction changes */
+  .flex-col-to-row {
+    @apply flex flex-col sm:flex-row;
+  }
+  
+  .flex-row-to-col {
+    @apply flex flex-row sm:flex-col;
+  }
+  
+  /* Touch-friendly tap targets for mobile */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+}
+
+/* Enhanced responsive form elements */
+input, select, textarea, button {
+  @apply max-w-full;
+}
+
+/* Safe area utilities for modern mobile browsers */
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-left {
+  padding-left: env(safe-area-inset-left);
+}
+
+.safe-right {
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Add this to make sure images don't break layouts */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Improve scrolling experience on mobile */
+@media (max-width: 640px) {
+  html, body {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Prevent text size adjustment on orientation change */
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+}
