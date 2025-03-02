@@ -58,6 +58,39 @@ export default function Navigation() {
     setIsUserMenuOpen(!isUserMenuOpen);
   };
   
+  // Close menus when pressing Escape key
+  useEffect(() => {
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsMenuOpen(false);
+        setIsUserMenuOpen(false);
+      }
+    };
+    
+    window.addEventListener('keydown', handleEscKey);
+    return () => {
+      window.removeEventListener('keydown', handleEscKey);
+    };
+  }, []);
+  
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (isUserMenuOpen && !target.closest('#user-menu-container')) {
+        setIsUserMenuOpen(false);
+      }
+      if (isMenuOpen && !target.closest('#mobile-menu') && !target.closest('#mobile-menu-button')) {
+        setIsMenuOpen(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isUserMenuOpen, isMenuOpen]);
+  
   // Check if a route is active
   const isActive = (path: string) => {
     if (path === '/') {
@@ -145,11 +178,11 @@ export default function Navigation() {
             
             {/* User Menu (Desktop) */}
             {isLoggedIn && (
-              <div className="hidden md:block relative ml-3">
+              <div className="hidden md:block relative ml-3" id="user-menu-container">
                 <div>
                   <button
                     type="button"
-                    className="flex text-sm rounded-full focus:outline-none transition-all"
+                    className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
                     id="user-menu"
                     aria-expanded={isUserMenuOpen}
                     aria-haspopup="true"
@@ -226,9 +259,11 @@ export default function Navigation() {
             {/* Mobile menu button*/}
             <div className="md:hidden flex items-center">
               <button
+                id="mobile-menu-button"
                 type="button"
-                className="p-2 rounded-md text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none transition-colors"
+                className="p-2 rounded-md text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors"
                 aria-expanded={isMenuOpen}
+                aria-controls="mobile-menu"
                 onClick={toggleMenu}
               >
                 <span className="sr-only">
@@ -250,7 +285,7 @@ export default function Navigation() {
       </div>
 
       {/* Mobile menu, show/hide based on menu state */}
-      <div className={`md:hidden transition-all duration-300 ${isMenuOpen ? 'max-h-screen' : 'max-h-0 overflow-hidden'}`}>
+      <div className={`md:hidden transition-all duration-300 ${isMenuOpen ? 'max-h-screen' : 'max-h-0 overflow-hidden'}`} id="mobile-menu">
         <div className="px-2 pt-2 pb-3 space-y-1 border-t border-gray-200 dark:border-gray-700">
           {navLinks.map((link) => (
             <Link
@@ -269,7 +304,14 @@ export default function Navigation() {
           
           {/* Theme Switcher (Mobile) */}
           <div className="py-2">
-            <ThemeSwitcher />
+            <div className="px-3 py-2 rounded-md">
+              <div className="flex flex-col">
+                <span className="text-base font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {t('changeTheme') || 'Change theme'}
+                </span>
+                <ThemeSwitcher />
+              </div>
+            </div>
           </div>
           
           {/* Login/Register (Mobile) */}

@@ -14,6 +14,7 @@ A modern web application to help users contest traffic and parking fines by gene
 - **Appeal Success Statistics**: Track and visualize success rates by appeal type and violation reason
 - **User Dashboard**: Unified interface to manage appeals, templates, and track statistics
 - **Multilingual Support**: Available in English and Spanish
+- **Dark Mode Support**: Fully customizable theme system with light, dark, and system preference options
 - **Export & Print Options**: Save appeals as text, PDF, or print directly
 
 ## Tech Stack
@@ -22,6 +23,7 @@ A modern web application to help users contest traffic and parking fines by gene
 - **AI Integration**: Google Gemini Flash for document analysis and text generation
 - **File Processing**: PDF processing with pdf-lib and pdf-parse, image processing with sharp
 - **Internationalization**: Custom language context for multilingual support
+- **Theme System**: Context-based theme management with system preference detection
 - **UI Components**: Custom React components with responsive design
 - **State Management**: React Context API for global state management
 
@@ -68,6 +70,15 @@ A modern web application to help users contest traffic and parking fines by gene
 9. Track your appeal success rate through the statistics dashboard
 
 ## Key Components
+
+### Theme System
+A comprehensive theme management system with multiple options:
+- Light mode for bright environments
+- Dark mode for reduced eye strain and low-light environments
+- System preference detection for automatic switching
+- Persistent theme preferences saved to cookies
+- Mobile-optimized interface for theme switching
+- Accessible design with proper color contrast in both themes
 
 ### Legal Argument Generator
 Access a database of legally sound arguments tailored to specific violation types. Each argument includes:
@@ -120,9 +131,14 @@ no-mas-multas/
 │   │   ├── AppealTemplates.tsx        # Templates management
 │   │   ├── AppealText.tsx             # Appeal text editor
 │   │   ├── Dashboard.tsx              # User dashboard
-│   │   └── LegalArgumentGenerator.tsx # Legal arguments
+│   │   ├── LegalArgumentGenerator.tsx # Legal arguments
+│   │   ├── LoadingSpinner.tsx         # Loading indicators
+│   │   ├── Navigation.tsx             # Site navigation
+│   │   └── ThemeSwitcher.tsx          # Theme toggle component
 │   ├── lib/          # Utility functions and contexts
-│   │   └── LanguageContext.tsx        # Multilingual support
+│   │   ├── cookieHelper.ts            # Cookie management
+│   │   ├── LanguageContext.tsx        # Multilingual support
+│   │   └── ThemeContext.tsx           # Theme management
 │   └── types.ts      # TypeScript types
 ├── .env.local.example # Environment variables example
 └── package.json     # Project dependencies
