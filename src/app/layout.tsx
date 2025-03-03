@@ -25,7 +25,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${inter.className} min-h-screen bg-gray-50 dark:bg-gray-900 dark:text-white transition-colors duration-200`}>
+      <body className={`${inter.className} min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white transition-colors duration-200`}>
         <LanguageProvider>
           <ThemeProvider>
             <ToastProvider>

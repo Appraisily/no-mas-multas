@@ -317,59 +317,60 @@ export default function Home() {
       
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="relative bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 py-16 md:py-24">
-          <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+        <section className="relative bg-white dark:bg-gray-950 py-16 md:py-24">
           <div className="container mx-auto px-4">
-            <motion.div 
+            <motion.div
               className="text-center max-w-4xl mx-auto"
               initial="hidden"
               animate="visible"
               variants={heroVariants}
             >
               <motion.div variants={childVariants} className="mb-6">
-                <Armadillo className="inline-block h-24 w-24 mb-4" />
+                <div className="inline-block p-4 bg-white dark:bg-gray-900 rounded-full shadow-sm">
+                  <Armadillo className="h-20 w-20" />
+                </div>
               </motion.div>
-              
-              <motion.h1 
+
+              <motion.h1
                 variants={childVariants}
-                className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400"
+                className="text-4xl md:text-6xl font-bold mb-6 text-gray-900 dark:text-white"
               >
-                {t('title') || 'No Más Multas'}
+                AppealAI
               </motion.h1>
-              
-              <motion.p 
+
+              <motion.p
                 variants={childVariants}
-                className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-8"
+                className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8"
               >
                 {t('subtitle') || 'Appeal traffic and parking tickets with AI'}
               </motion.p>
-              
+
               <motion.div variants={childVariants} className="space-x-4">
-                <Button 
-                  size="lg" 
-                  className="bg-blue-600 hover:bg-blue-700 text-white text-lg px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all"
+                <Button
+                  size="lg"
+                  className="bg-gray-900 hover:bg-gray-800 text-white text-lg px-8 py-6 rounded-md shadow-sm hover:shadow-md transition-all"
                   onClick={handleGetStarted}
                 >
                   {t('getStarted') || 'Get Started'}
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="text-lg px-8 py-6 rounded-full border-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="text-lg px-8 py-6 rounded-md border hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
                   onClick={() => router.push('/demo')}
                 >
                   {t('watchDemo') || 'Watch Demo'}
                 </Button>
               </motion.div>
-              
-              <motion.div 
+
+              <motion.div
                 variants={childVariants}
                 className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto"
               >
                 {statItems.map((stat, index) => (
-                  <div key={index} className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow">
-                    <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">{stat.value}</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">{stat.label}</div>
+                  <div key={index} className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-gray-200 dark:border-gray-800 hover:shadow-sm transition-shadow">
+                    <div className="text-3xl font-bold text-gray-900 dark:text-white">{stat.value}</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">{stat.label}</div>
                   </div>
                 ))}
               </motion.div>
@@ -378,9 +379,9 @@ export default function Home() {
         </section>
         
         {/* How It Works Section */}
-        <section className="py-16 bg-white dark:bg-gray-900">
+        <section className="py-16 bg-gray-50 dark:bg-gray-900">
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-800 dark:text-white">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
               {t('howItWorks') || 'How It Works'}
             </h2>
             
@@ -390,7 +391,7 @@ export default function Home() {
                   title: 'Upload Your Ticket',
                   description: 'Upload your traffic ticket or enter the details manually.',
                   icon: (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-blue-500 mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-700 dark:text-gray-300 mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                       <polyline points="17 8 12 3 7 8" />
                       <line x1="12" y1="3" x2="12" y2="15" />
@@ -401,7 +402,7 @@ export default function Home() {
                   title: 'AI Analysis',
                   description: 'Our advanced AI analyzes your ticket for potential weaknesses and legal arguments.',
                   icon: (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-blue-500 mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-700 dark:text-gray-300 mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                     </svg>
                   )
@@ -410,7 +411,7 @@ export default function Home() {
                   title: 'Generate Appeal',
                   description: 'Receive a professionally written appeal letter customized to your situation.',
                   icon: (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-blue-500 mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-700 dark:text-gray-300 mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                       <polyline points="14 2 14 8 20 8" />
                       <line x1="16" y1="13" x2="8" y2="13" />
@@ -420,10 +421,10 @@ export default function Home() {
                   )
                 }
               ].map((step, index) => (
-                <Card key={index} className="border-0 shadow-md hover:shadow-xl transition-shadow">
+                <Card key={index} className="border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow">
                   <CardContent className="p-6 text-center">
                     {step.icon}
-                    <h3 className="text-xl font-semibold mb-3 text-gray-800 dark:text-white">{step.title}</h3>
+                    <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">{step.title}</h3>
                     <p className="text-gray-600 dark:text-gray-400">{step.description}</p>
                   </CardContent>
                 </Card>
@@ -433,9 +434,9 @@ export default function Home() {
         </section>
         
         {/* Tools Section */}
-        <section className="py-16 bg-gray-50 dark:bg-gray-800">
+        <section className="py-16 bg-white dark:bg-gray-950">
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-gray-800 dark:text-white">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-gray-900 dark:text-white">
               {t('availableTools') || 'Available Tools'}
             </h2>
             <p className="text-center text-gray-600 dark:text-gray-400 mb-12 max-w-3xl mx-auto">
@@ -475,10 +476,10 @@ export default function Home() {
                   image: '/templates.png'
                 }
               ].map((tool, index) => (
-                <Card key={index} className="overflow-hidden border-0 shadow-md hover:shadow-xl transition-all group">
-                  <div className="bg-gradient-to-r from-blue-500 to-indigo-600 h-3"></div>
+                <Card key={index} className="overflow-hidden border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-all group">
+                  <div className="h-1 bg-gray-900 dark:bg-gray-700"></div>
                   <CardContent className="p-6">
-                    <div className="mb-4 h-40 bg-gray-200 dark:bg-gray-700 rounded-md flex items-center justify-center">
+                    <div className="mb-4 h-40 bg-gray-100 dark:bg-gray-800 rounded-md flex items-center justify-center">
                       {tool.image ? (
                         <img src={tool.image} alt={tool.title} className="w-full h-full object-cover" />
                       ) : (
@@ -489,7 +490,7 @@ export default function Home() {
                         </svg>
                       )}
                     </div>
-                    <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{tool.title}</h3>
+                    <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">{tool.title}</h3>
                     <p className="text-gray-600 dark:text-gray-400">{tool.description}</p>
                   </CardContent>
                 </Card>
@@ -497,9 +498,9 @@ export default function Home() {
             </div>
             
             <div className="text-center mt-12">
-              <Button 
+              <Button
                 size="lg"
-                className="bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-md hover:shadow-lg"
+                className="bg-gray-900 hover:bg-gray-800 text-white rounded-md shadow-sm hover:shadow-md"
                 onClick={() => router.push('/tools')}
               >
                 {t('exploreTools') || 'Explore All Tools'}
@@ -509,17 +510,17 @@ export default function Home() {
         </section>
         
         {/* Testimonials */}
-        <section className="py-16 bg-white dark:bg-gray-900">
+        <section className="py-16 bg-gray-50 dark:bg-gray-900">
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-800 dark:text-white">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
               {t('successStories') || 'Success Stories'}
             </h2>
             
             <div className="grid md:grid-cols-3 gap-8">
               {[
                 {
-                  quote: "I was skeptical at first, but NoMasMultas helped me appeal a $350 parking ticket successfully. The AI found a loophole in the signage regulations!",
-                  author: "María G.",
+                  quote: "I was skeptical at first, but AppealAI helped me appeal a $350 parking ticket successfully. The AI found a loophole in the signage regulations!",
+                  author: "Maria G.",
                   location: "San Diego, CA"
                 },
                 {
@@ -533,18 +534,18 @@ export default function Home() {
                   location: "Miami, FL"
                 }
               ].map((testimonial, index) => (
-                <Card key={index} className="border-0 shadow-md hover:shadow-xl transition-shadow">
+                <Card key={index} className="border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow">
                   <CardContent className="p-6">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-blue-400 mb-4" fill="currentColor" viewBox="0 0 24 24">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400 mb-4" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
                     </svg>
                     <p className="text-gray-700 dark:text-gray-300 mb-4 italic">"{testimonial.quote}"</p>
                     <div className="flex items-center">
-                      <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-300 font-semibold mr-3">
+                      <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 font-semibold mr-3">
                         {testimonial.author.charAt(0)}
                       </div>
                       <div>
-                        <p className="font-medium text-gray-800 dark:text-white">{testimonial.author}</p>
+                        <p className="font-medium text-gray-900 dark:text-white">{testimonial.author}</p>
                         <p className="text-sm text-gray-500 dark:text-gray-500">{testimonial.location}</p>
                       </div>
                     </div>
@@ -556,22 +557,22 @@ export default function Home() {
         </section>
         
         {/* CTA Section */}
-        <section className="py-20 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+        <section className="py-20 bg-gray-900 text-white">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
               {t('readyToStart') || 'Ready to Fight Your Traffic Ticket?'}
             </h2>
-            <p className="text-xl md:text-2xl mb-8 max-w-2xl mx-auto text-blue-100">
+            <p className="text-xl md:text-2xl mb-8 max-w-2xl mx-auto text-gray-300">
               {t('ctaDescription') || 'Join thousands of drivers who have successfully appealed their tickets using our AI-powered tools.'}
             </p>
-            <Button 
-              size="lg" 
-              className="bg-white text-blue-700 hover:bg-blue-50 text-lg px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all"
+            <Button
+              size="lg"
+              className="bg-white text-gray-900 hover:bg-gray-100 text-lg px-8 py-6 rounded-md shadow-md hover:shadow-lg transition-all"
               onClick={handleGetStarted}
             >
               {t('startForFree') || 'Start For Free'}
             </Button>
-            <p className="mt-4 text-blue-200">
+            <p className="mt-4 text-gray-400">
               {t('noCardRequired') || 'No credit card required to get started'}
             </p>
           </div>
